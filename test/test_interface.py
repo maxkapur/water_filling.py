@@ -1,4 +1,5 @@
 import json
+import re
 
 import numpy as np
 import pytest
@@ -19,13 +20,11 @@ async def test_get_level_html(triple):
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
 
+    level_esc = re.escape(str(triple.level))
     if np.isclose(triple.level, 0.0, atol=1e-5):
-        assert (
-            f"level of water is {triple.level}" in resp.text
-            or f"level of water is -{triple.level}" in resp.text
-        )
+        assert re.search(rf"<strong>-?{level_esc}\d*</strong>", resp.text), level_esc
     else:
-        assert f"level of water is {triple.level}" in resp.text
+        assert re.search(rf"<strong>{level_esc}\d*</strong>", resp.text), level_esc
 
 
 @pytest.mark.asyncio
