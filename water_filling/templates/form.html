@@ -1,7 +1,17 @@
 {% extends "base.html" %}
 {%- block content %}
-<figure>
-  <form action="/level" method="POST">
+<main>
+  {%- if errors %}
+  <p>
+    Please correct the following errors:
+  </p>
+  <ul>
+    {%- for error in errors %}
+    <li>{{ error }}</li>
+    {%- endfor %}
+  </ul>
+  {%- endif %}
+  <form action="/level" accept-charset="utf-8" method="POST">
     <p>Solve your own water-filling problem:</p>
     <ul>
       <p>
@@ -21,5 +31,5 @@
       <input type="submit" value="Compute water level">
     </p>
   </form>
-</figure>
+</main>
 {%- endblock %}

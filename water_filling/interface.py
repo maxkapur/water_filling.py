@@ -36,7 +36,11 @@ def heights_parser(s):
         return None
 
 
-def stringify(list_of_numbers):
+def englishify(list_of_numbers):  # anglicize?
+    """Convert a list of numbers to a running-text representation.
+
+    For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`.
+    """
     match len(list_of_numbers):
         case 0:
             raise ValueError("Empty list")
@@ -82,7 +86,7 @@ async def get_level(request):
 
     if "text/html" in accept:
         return Template("visualize.html").render(
-            heights_str=stringify(heights),
+            heights_str=englishify(heights),
             volume_str=str(volume),
             level_str="%.2f" % level,
             svg_data=svg_data,
@@ -100,20 +104,37 @@ async def get_level(request):
     }
 
 
-@app.post("/level")
-async def post_level(request):
-    heights = request.form.get("heights")
-    volume = request.form.get("volume")
-    return redirect(f"/level?heights={quote(heights)}&volume={quote(volume)}")
-
-
 @app.get("/")
 async def get_index(request):
     heights_str, volume_str = random_str_input()
+    if errors_str := request.args.get("errors"):
+        errors = errors_str.split(";")
+    else:
+        errors = []
     return Template("form.html").render(
-        heights_str=heights_str,
-        volume_str=volume_str,
+        heights_str=request.args.get("heights") or heights_str,
+        volume_str=request.args.get("volume") or volume_str,
+        errors=errors,
     ), {"Content-Type": "text/html"}
+
+
+@app.post("/level")
+async def post_level(request):
+    heights_str = request.form.get("heights")
+    volume_str = request.form.get("volume")
+
+    errors = []
+    if heights_parser(heights_str) is None:
+        errors.append("Invalid heights input")
+    if volume_parser(volume_str) is None:
+        errors.append("Invalid volume input")
+    if errors:
+        error_str = ";".join(errors)
+        return redirect(
+            f"/?errors={quote(error_str)}&heights={quote(heights_str)}&volume={quote(volume_str)}"
+        )
+
+    return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
 
 
 @app.get("/random")
