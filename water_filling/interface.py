@@ -2,7 +2,7 @@ import io
 from pathlib import Path
 
 import numpy as np
-from microdot import Microdot
+from microdot import Microdot, redirect
 from microdot.jinja import Template
 
 from . import water_filling
@@ -50,6 +50,15 @@ def stringify(list_of_numbers):
             )
 
 
+def random_str_input():
+    n = water_filling.rng.integers(10, 21)
+    heights = water_filling.rng.integers(0, 21, size=n)
+    volume = water_filling.rng.integers(1, n * 15)
+    heights_str = ",".join(str(x) for x in heights)
+    volume_str = str(volume)
+    return heights_str, volume_str
+
+
 # TODO: Disk cache
 def get_svg_data(heights, level):
     fig, ax = water_filling.visualize(heights, level)
@@ -90,14 +99,23 @@ async def get_level(request, heights, volume):
     }
 
 
+@app.post("/level")
+async def post_level(request):
+    heights = request.form.get("heights")
+    volume = request.form.get("volume")
+    return redirect(f"/level/{heights}/{volume}")
+
+
+@app.get("/")
+async def get_index(request):
+    heights_str, volume_str = random_str_input()
+    return Template("form.html").render(
+        heights_str=heights_str,
+        volume_str=volume_str,
+    ), {"Content-Type": "text/html"}
+
+
 @app.get("/random")
 async def get_random(request):
-    n = water_filling.rng.integers(10, 21)
-    heights = water_filling.rng.integers(-10, 11, size=n)
-    volume = water_filling.rng.integers(1, n * 15)
-    heights_str = ",".join(str(x) for x in heights)
-    return (
-        "Random water-filling instance",
-        302,
-        {"Location": f"/level/{heights_str}/{volume}"},
-    )
+    heights_str, volume_str = random_str_input()
+    return redirect(f"/level/{heights_str}/{volume_str}")
