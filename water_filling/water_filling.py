@@ -84,8 +84,3 @@ def level(heights, target_volume, max_iterations=5000):
             lo_volume = mid_volume
 
     raise RecursionError(i)
-
-
-if __name__ == "__main__":
-    visualize([-1, 2, -3, 4], 0.4)
-    plt.show()

@@ -1,7 +1,0 @@
-jinja2
-matplotlib
-microdot
-numpy
-pytest
-pytest-asyncio
-ruff

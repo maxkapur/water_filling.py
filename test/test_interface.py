@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from microdot.test_client import TestClient
 
-from interface import app
+from water_filling import app
 
 
 @pytest.mark.parametrize(

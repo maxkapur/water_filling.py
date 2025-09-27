@@ -48,7 +48,3 @@ async def get(request, volume, heights):
         return "Bad request", 400
     else:  # json
         return {"volume": volume, "heights": heights.tolist(), "level": level}
-
-
-if __name__ == "__main__":
-    app.run()
