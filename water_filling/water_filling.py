@@ -29,22 +29,22 @@ def visualize(heights, level):
 
     heights = np.asarray(heights)
     fig, ax = plt.subplots()
-    hmax = heights.max()
+    hmax = np.max([heights.max(), level])
     hmin = heights.min()
     hrange = hmax - hmin
-    offset = hmin - hrange  # Arbitrary value smaller than hmin
+    baseline = hmin - hrange  # Arbitrary value smaller than hmin
     xs = np.linspace(-0.5, heights.size - 0.5, 1000)
     ax.fill_between(
         xs,
         level + 0.01 * hrange * np.sin(25 * xs / heights.size),
-        y2=offset,
+        y2=baseline,
         hatch=".",
         fc=np.random.choice(water_colors),
     )
     ax.bar(
         np.arange(heights.size),
-        heights - offset,
-        bottom=offset,
+        heights - baseline,
+        bottom=baseline,
         width=1.0,
         fc=np.random.choice(terrain_colors),
         edgecolor="black",
