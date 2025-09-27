@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {%- block content %}
-<figure>
-  {{- svg_data | safe }}
-  <figcaption>
-    With terrain heights of <strong>{{ heights_str }}</strong> and a volume of
-    <strong>{{ volume_str }}</strong>, the level of water is
-    <strong>{{ level_str }}</strong>.
-  </figcaption>
-</figure>
+<main>
+  <figure>
+    {{- svg_data | safe }}
+    <figcaption>
+      With terrain heights of <strong>{{ heights_str }}</strong> and a volume of
+      <strong>{{ volume_str }}</strong>, the level of water is
+      <strong>{{ level_str }}</strong>.
+    </figcaption>
+  </figure>
+</main>
 {%- endblock %}
