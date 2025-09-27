@@ -1,5 +1,6 @@
 import io
 from pathlib import Path
+from urllib.parse import quote
 
 import numpy as np
 from microdot import Microdot, redirect
@@ -67,10 +68,10 @@ def get_svg_data(heights, level):
         return buf.getvalue()
 
 
-@app.get("/level/<heights>/<volume>")
-async def get_level(request, heights, volume):
-    heights = heights_parser(heights)
-    volume = volume_parser(volume)
+@app.get("/level")
+async def get_level(request):
+    heights = heights_parser(request.args.get("heights"))
+    volume = volume_parser(request.args.get("volume"))
     if heights is None or volume is None:
         return "Bad request", 400
 
@@ -103,7 +104,7 @@ async def get_level(request, heights, volume):
 async def post_level(request):
     heights = request.form.get("heights")
     volume = request.form.get("volume")
-    return redirect(f"/level/{heights}/{volume}")
+    return redirect(f"/level?heights={quote(heights)}&volume={quote(volume)}")
 
 
 @app.get("/")
@@ -118,4 +119,4 @@ async def get_index(request):
 @app.get("/random")
 async def get_random(request):
     heights_str, volume_str = random_str_input()
-    return redirect(f"/level/{heights_str}/{volume_str}")
+    return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")

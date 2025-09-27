@@ -1,5 +1,6 @@
 import json
 import re
+from urllib.parse import quote
 
 import numpy as np
 import pytest
@@ -7,7 +8,7 @@ import pytest
 
 def to_level_path(triple):
     heights_str = ",".join(str(x) for x in triple.heights)
-    return f"/level/{heights_str}/{triple.volume}"
+    return f"/level?heights={quote(heights_str)}&volume={quote(str(triple.volume))}"
 
 
 @pytest.mark.asyncio
