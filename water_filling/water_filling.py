@@ -7,7 +7,7 @@ rng = np.random.default_rng()
 def volume(heights, level):
     """Volume of water above terrain with given heights.
 
-    For example, `terrain = [1, 4, 2, 3]` can be visualized as:
+    For example, `heights = [1, 4, 2, 3]` can be visualized as:
 
         |
         |   x
