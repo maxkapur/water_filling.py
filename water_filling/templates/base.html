@@ -1,12 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Water filling</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Water filling</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <header>
     <h1>Water filling</h1>
-    {%- block content %}
-    {%- endblock %}
+    <p>
+      This site demonstrates the water-filling problem: Given an uneven tub
+      defined by a list of <strong>heights</strong> and a certain
+      <strong>volume</strong> of water, what will the <strong>level</strong> of
+      the water be once it has sloshed around and stabilized?
+    </p>
+    <p>
+      The water-filling problem can be solved by deriving the function for
+      <code>volume(heights, level)</code>, the volume of water present when the
+      level is at a given value. Since this function is monotonically increasing
+      in <coide>level</coide>, we can the level that contains the target
+      <strong>volume</strong> from the original problem using a root-finding
+      algorithm like bisection or the <a
+      href="https://en.wikipedia.org/wiki/Secant_method">secant method</a>
+      used here.
+    </p>
+    <nav>
+      <a href="/random">Random problem</a> |
+      <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
+    </nav>
+  </header>
+  {%- block content %}
+  {%- endblock %}
 </body>
 </html>
