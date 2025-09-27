@@ -58,11 +58,11 @@ def get_svg_data(heights, level):
         return buf.getvalue()
 
 
-@app.get("/level/<volume>/<heights>")
-async def get(request, volume, heights):
-    volume = volume_parser(volume)
+@app.get("/level/<heights>/<volume>")
+async def get(request, heights, volume):
     heights = heights_parser(heights)
-    if volume is None or heights is None:
+    volume = volume_parser(volume)
+    if heights is None or volume is None:
         return "Bad request", 400
 
     level = water_filling.level(heights, volume)
@@ -83,8 +83,8 @@ async def get(request, volume, heights):
 
     # Default to JSON
     return {
-        "volume": volume,
         "heights": heights.tolist(),
+        "volume": volume,
         "level": level,
         "svg": svg_data,
     }

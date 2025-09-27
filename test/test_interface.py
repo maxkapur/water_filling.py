@@ -10,7 +10,7 @@ from water_filling import app
 
 def to_level_path(triple):
     heights_str = ",".join(str(x) for x in triple.heights)
-    return f"/level/{triple.volume}/{heights_str}"
+    return f"/level/{heights_str}/{triple.volume}"
 
 
 @pytest.mark.asyncio
