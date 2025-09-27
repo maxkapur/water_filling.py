@@ -38,7 +38,16 @@ async def get(request, volume, heights):
         return "Bad request", 400
 
     level = water_filling.level(heights, volume)
-    return f"{volume = }, {heights = }, {level = }"
+
+    accept = request.headers.get("Accept", "").lower()
+    if "text/html" in accept:
+        # TODO
+        return "Bad request", 400
+    if "image/svg" in accept:
+        # TODO
+        return "Bad request", 400
+    else:  # json
+        return {"volume": volume, "heights": heights.tolist(), "level": level}
 
 
 if __name__ == "__main__":
