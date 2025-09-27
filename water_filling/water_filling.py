@@ -52,6 +52,7 @@ def visualize(heights, level):
     ax.set_xlim(xs[0], xs[-1])
     ax.set_ylim(hmin - 0.1 * hrange, hmax + 0.1 * hrange)
     ax.set_xticks([])
+    plt.close()
     return fig, ax
 
 
