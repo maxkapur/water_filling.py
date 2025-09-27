@@ -7,30 +7,30 @@ from microdot.test_client import TestClient
 from water_filling import app
 
 
-@pytest.mark.parametrize(
-    "path,level",
-    [
-        ("/level/2/1,2,3,4", 2.5),
-        ("/level/2/-1,2,-3,-4", -2.5),
-    ],
-)
+def to_level_path(triple):
+    heights_str = ",".join(str(x) for x in triple.heights)
+    return f"/level/{triple.volume}/{heights_str}"
+
+
 @pytest.mark.asyncio
-async def test_get_level_html(path, level):
+async def test_get_level_html(triple):
+    path = to_level_path(triple)
     client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
-    assert f"level of water is {level}" in resp.text
+
+    if np.isclose(triple.level, 0.0, atol=1e-5):
+        assert (
+            f"level of water is {triple.level}" in resp.text
+            or f"level of water is -{triple.level}" in resp.text
+        )
+    else:
+        assert f"level of water is {triple.level}" in resp.text
 
 
-@pytest.mark.parametrize(
-    "path,level",
-    [
-        ("/level/2/1,2,3,4", 2.5),
-        ("/level/2/-1,2,-3,-4", -2.5),
-    ],
-)
 @pytest.mark.asyncio
-async def test_get_level_svg(path, level):
+async def test_get_level_svg(triple):
+    path = to_level_path(triple)
     client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "image/svg"})
     assert resp.status_code == 200
@@ -38,17 +38,11 @@ async def test_get_level_svg(path, level):
     assert resp.text.lower().strip().endswith("</svg>")
 
 
-@pytest.mark.parametrize(
-    "path,level",
-    [
-        ("/level/2/1,2,3,4", 2.5),
-        ("/level/2/-1,2,-3,-4", -2.5),
-    ],
-)
 @pytest.mark.asyncio
-async def test_get_level_json(path, level):
+async def test_get_level_json(triple):
+    path = to_level_path(triple)
     client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "application/json"})
     assert resp.status_code == 200
     content = json.loads(resp.text)
-    assert np.isclose(content["level"], level)
+    assert np.isclose(content["level"], triple.level, atol=1e-5)
