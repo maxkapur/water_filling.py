@@ -1,9 +1,14 @@
+import io
+from pathlib import Path
+
 import numpy as np
 from microdot import Microdot
+from microdot.jinja import Template
 
 import water_filling
 
 app = Microdot()
+Template.initialize(Path(__file__).parent / "templates")
 
 
 def volume_parser(s):
@@ -30,6 +35,21 @@ def heights_parser(s):
         return None
 
 
+def stringify(list_of_numbers):
+    match len(list_of_numbers):
+        case 0:
+            raise ValueError("Empty list")
+        case 1:
+            return str(list_of_numbers[0])
+        case 2:
+            return f"{list_of_numbers[0]} and {list_of_numbers[1]}"
+        case _:
+            return (
+                ", ".join(str(x) for x in list_of_numbers[:-1])
+                + f", and {list_of_numbers[-1]}"
+            )
+
+
 @app.get("/level/<volume>/<heights>")
 async def get(request, volume, heights):
     volume = volume_parser(volume)
@@ -41,8 +61,15 @@ async def get(request, volume, heights):
 
     accept = request.headers.get("Accept", "").lower()
     if "text/html" in accept:
-        # TODO
-        return "Bad request", 400
+        fig, ax = water_filling.visualize(heights, level)
+        with io.StringIO() as buf:
+            fig.savefig(buf, format="svg")
+            return Template("visualize.html").render(
+                heights_str=stringify(heights),
+                volume_str=str(volume),
+                level_str="%.2f" % level,
+                svg_data=buf.getvalue(),
+            ), {"Content-Type": "text/html"}
     if "image/svg" in accept:
         # TODO
         return "Bad request", 400
