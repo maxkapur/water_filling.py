@@ -1,5 +1,6 @@
 import functools
 import io
+import sqlite3
 from pathlib import Path
 from urllib.parse import quote
 
@@ -9,6 +10,10 @@ from microdot.jinja import Template
 
 from . import water_filling
 
+cache_path = Path.home() / ".cache" / "water_filling.cache.db"
+cache_path.parent.mkdir(parents=True, exist_ok=True)
+con = sqlite3.connect(cache_path)
+
 app = Microdot()
 Template.initialize(Path(__file__).parent / "templates")
 
@@ -16,7 +21,10 @@ Template.initialize(Path(__file__).parent / "templates")
 @functools.lru_cache(maxsize=1024)
 def volume_parser(s):
     try:
-        res = np.fromstring(s, sep=",").item()
+        arr = np.fromstring(s, sep=",")
+        if not arr.size == 1:
+            raise ValueError
+        res = arr[0]
         if not res >= 0:
             raise ValueError
         return res
@@ -67,14 +75,6 @@ def random_str_input():
     return heights_str, volume_str
 
 
-# TODO: Disk cache
-def get_svg_data(heights, level):
-    fig, ax = water_filling.visualize(heights, level)
-    with io.StringIO() as buf:
-        fig.savefig(buf, format="svg")
-        return buf.getvalue()
-
-
 @app.get("/level")
 async def get_level(request):
     heights = heights_parser(request.args.get("heights"))
@@ -82,29 +82,65 @@ async def get_level(request):
     if heights is None or volume is None:
         return "Bad request", 400
 
-    level = water_filling.level(heights, volume)
-    svg_data = get_svg_data(heights, level)
-
     accept = request.headers.get("Accept", "").lower()
+    as_dict = get_level_as_dict_from_parsed(heights, volume)
 
     if "text/html" in accept:
         return Template("visualize.html").render(
             heights_str=englishify(heights),
             volume_str=str(volume),
-            level_str="%.2f" % level,
-            svg_data=svg_data,
+            level_str="%.2f" % as_dict["level"],
+            svg_data=as_dict["svg"],
+            cached=as_dict["cached"],
         ), {"Content-Type": "text/html"}
 
     if "image/svg" in accept:
-        return svg_data
+        return as_dict["svg"], {"Content-Type": "image/svg"}
 
     # Default to JSON
-    return {
+    return as_dict
+
+
+def get_level_as_dict_from_parsed(heights, volume):
+    """Wrapper to compute the level and visualization with a sqlite cache."""
+    heights_bytes = heights.tobytes()
+    volume_bytes = volume.tobytes()
+
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS water_filling(heights, volume, level, svg)")
+    cur.execute(
+        "SELECT level, svg FROM water_filling WHERE heights=? AND volume=?",
+        (heights_bytes, volume_bytes),
+    )
+    if fetched := cur.fetchone():
+        level = np.frombuffer(fetched[0])[0]
+        svg_data = fetched[1]
+        return {
+            "heights": heights.tolist(),
+            "volume": volume,
+            "level": level,
+            "svg": svg_data,
+            "cached": True,
+        }
+
+    level = water_filling.level(heights, volume)
+    fig, ax = water_filling.visualize(heights, level)
+    with io.StringIO() as buf:
+        fig.savefig(buf, format="svg")
+        svg_data = buf.getvalue()
+    res = {
         "heights": heights.tolist(),
         "volume": volume,
         "level": level,
         "svg": svg_data,
+        "cached": False,
     }
+    cur.execute(
+        "INSERT INTO water_filling VALUES (?,?,?,?)",
+        (heights.tobytes(), volume.tobytes(), level.tobytes(), svg_data),
+    )
+    con.commit()
+    return res
 
 
 @app.get("/")

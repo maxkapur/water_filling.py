@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {%- block content %}
 <main>
+  {%- if cached %}
+  <p>
+    <strong>You are not the first.</strong> The calculation and image below were
+    retrieved from the cache.
+  </p>
+  {%- endif %}
   <figure>
     {{- svg_data | safe }}
     <figcaption>
