@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+rng = np.random.default_rng()
+
 
 def volume(heights, level):
     """Volume of water above terrain with given heights.
@@ -39,14 +41,14 @@ def visualize(heights, level):
         level + 0.01 * hrange * np.sin(25 * xs / heights.size),
         y2=baseline,
         hatch=".",
-        fc=np.random.choice(water_colors),
+        fc=rng.choice(water_colors),
     )
     ax.bar(
         np.arange(heights.size),
         heights - baseline,
         bottom=baseline,
         width=1.0,
-        fc=np.random.choice(terrain_colors),
+        fc=rng.choice(terrain_colors),
         edgecolor="black",
     )
     ax.set_xlim(xs[0], xs[-1])

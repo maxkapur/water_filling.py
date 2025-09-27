@@ -5,7 +5,7 @@ import numpy as np
 from microdot import Microdot
 from microdot.jinja import Template
 
-import water_filling
+from . import water_filling
 
 app = Microdot()
 Template.initialize(Path(__file__).parent / "templates")
@@ -59,7 +59,7 @@ def get_svg_data(heights, level):
 
 
 @app.get("/level/<heights>/<volume>")
-async def get(request, heights, volume):
+async def get_level(request, heights, volume):
     heights = heights_parser(heights)
     volume = volume_parser(volume)
     if heights is None or volume is None:
@@ -88,3 +88,16 @@ async def get(request, heights, volume):
         "level": level,
         "svg": svg_data,
     }
+
+
+@app.get("/random")
+async def get_random(request):
+    n = water_filling.rng.integers(10, 21)
+    heights = water_filling.rng.integers(-10, 11, size=n)
+    volume = water_filling.rng.integers(1, n * 15)
+    heights_str = ",".join(str(x) for x in heights)
+    return (
+        "Random water-filling instance",
+        302,
+        {"Location": f"/level/{heights_str}/{volume}"},
+    )
