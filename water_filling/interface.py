@@ -50,6 +50,14 @@ def stringify(list_of_numbers):
             )
 
 
+# TODO: Disk cache
+def get_svg_data(heights, level):
+    fig, ax = water_filling.visualize(heights, level)
+    with io.StringIO() as buf:
+        fig.savefig(buf, format="svg")
+        return buf.getvalue()
+
+
 @app.get("/level/<volume>/<heights>")
 async def get(request, volume, heights):
     volume = volume_parser(volume)
@@ -58,20 +66,25 @@ async def get(request, volume, heights):
         return "Bad request", 400
 
     level = water_filling.level(heights, volume)
+    svg_data = get_svg_data(heights, level)
 
     accept = request.headers.get("Accept", "").lower()
+
     if "text/html" in accept:
-        fig, ax = water_filling.visualize(heights, level)
-        with io.StringIO() as buf:
-            fig.savefig(buf, format="svg")
-            return Template("visualize.html").render(
-                heights_str=stringify(heights),
-                volume_str=str(volume),
-                level_str="%.2f" % level,
-                svg_data=buf.getvalue(),
-            ), {"Content-Type": "text/html"}
+        return Template("visualize.html").render(
+            heights_str=stringify(heights),
+            volume_str=str(volume),
+            level_str="%.2f" % level,
+            svg_data=svg_data,
+        ), {"Content-Type": "text/html"}
+
     if "image/svg" in accept:
-        # TODO
-        return "Bad request", 400
-    else:  # json
-        return {"volume": volume, "heights": heights.tolist(), "level": level}
+        return svg_data
+
+    # Default to JSON
+    return {
+        "volume": volume,
+        "heights": heights.tolist(),
+        "level": level,
+        "svg": svg_data,
+    }

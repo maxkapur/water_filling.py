@@ -30,6 +30,22 @@ async def test_get_level_html(path, level):
     ],
 )
 @pytest.mark.asyncio
+async def test_get_level_svg(path, level):
+    client = TestClient(app)
+    resp = await client.get(path, headers={"Accept": "image/svg"})
+    assert resp.status_code == 200
+    assert "http://www.w3.org/2000/svg" in resp.text
+    assert resp.text.lower().strip().endswith("</svg>")
+
+
+@pytest.mark.parametrize(
+    "path,level",
+    [
+        ("/level/2/1,2,3,4", 2.5),
+        ("/level/2/-1,2,-3,-4", -2.5),
+    ],
+)
+@pytest.mark.asyncio
 async def test_get_level_json(path, level):
     client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "application/json"})
