@@ -43,7 +43,8 @@ def test_volume(heights, level, volume):
     ],
 )
 def test_level(heights, target_volume, level):
-    level_estimated = water_filling.level(heights, target_volume)
+    # These simple cases should converge in far fewer iterations
+    level_estimated = water_filling.level(heights, target_volume, max_iterations=25)
     volume_achieved = water_filling.volume(heights, level_estimated)
     assert np.isclose(volume_achieved, target_volume)
     # looser tolerance here because the bisection search converges based on
