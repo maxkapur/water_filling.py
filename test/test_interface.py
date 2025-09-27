@@ -3,9 +3,6 @@ import re
 
 import numpy as np
 import pytest
-from microdot.test_client import TestClient
-
-from water_filling import app
 
 
 def to_level_path(triple):
@@ -14,9 +11,8 @@ def to_level_path(triple):
 
 
 @pytest.mark.asyncio
-async def test_get_level_html(triple):
+async def test_get_level_html(client, triple):
     path = to_level_path(triple)
-    client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
 
@@ -28,9 +24,8 @@ async def test_get_level_html(triple):
 
 
 @pytest.mark.asyncio
-async def test_get_level_svg(triple):
+async def test_get_level_svg(client, triple):
     path = to_level_path(triple)
-    client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "image/svg"})
     assert resp.status_code == 200
     assert "http://www.w3.org/2000/svg" in resp.text
@@ -38,9 +33,8 @@ async def test_get_level_svg(triple):
 
 
 @pytest.mark.asyncio
-async def test_get_level_json(triple):
+async def test_get_level_json(client, triple):
     path = to_level_path(triple)
-    client = TestClient(app)
     resp = await client.get(path, headers={"Accept": "application/json"})
     assert resp.status_code == 200
     content = json.loads(resp.text)

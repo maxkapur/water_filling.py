@@ -1,6 +1,9 @@
 from collections import namedtuple
 
 import pytest
+from microdot.test_client import TestClient
+
+from water_filling import app
 
 WaterFillingTriple = namedtuple("WaterFillingTriple", "heights volume level".split())
 
@@ -24,3 +27,8 @@ WaterFillingTriple = namedtuple("WaterFillingTriple", "heights volume level".spl
 def triple(request):
     """Triple of valid `heights`, `volume`, and `level` for water filling."""
     yield request.param
+
+
+@pytest.fixture(scope="module")
+def client():
+    return TestClient(app)
