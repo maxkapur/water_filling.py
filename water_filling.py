@@ -70,16 +70,18 @@ def level(heights, target_volume, max_iterations=5000):
     hi_volume = volume(heights, hi)
 
     for i in range(max_iterations):
-        slope = (target_volume - lo_volume) / (hi_volume - lo_volume)
-        mid = lo + (hi - lo) * slope
+        frac = (target_volume - lo_volume) / (hi_volume - lo_volume)
+        mid = lo + frac * (hi - lo)
         mid_volume = volume(heights, mid)
         if np.isclose(mid_volume, target_volume):
             return mid
 
         if mid_volume > target_volume:
             hi = mid
+            hi_volume = mid_volume
         else:
             lo = mid
+            lo_volume = mid_volume
 
     raise RecursionError(i)
 
