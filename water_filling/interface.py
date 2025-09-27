@@ -1,3 +1,4 @@
+import functools
 import io
 from pathlib import Path
 from urllib.parse import quote
@@ -12,6 +13,7 @@ app = Microdot()
 Template.initialize(Path(__file__).parent / "templates")
 
 
+@functools.lru_cache(maxsize=1024)
 def volume_parser(s):
     try:
         res = np.fromstring(s, sep=",").item()
@@ -22,6 +24,7 @@ def volume_parser(s):
         return None
 
 
+@functools.lru_cache(maxsize=1024)
 def heights_parser(s):
     try:
         res = np.fromstring(s, sep=",")
