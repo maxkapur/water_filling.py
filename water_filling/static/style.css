@@ -88,6 +88,17 @@ article {
   background: var(--bg-alternate2);
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing-unit) / 2);
+
+  textarea {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
 .figure-wrapper {
   margin: var(--spacing-unit);
 
