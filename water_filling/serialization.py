@@ -12,7 +12,7 @@ def volume_parser(s):
         if not arr.size == 1:
             raise ValueError
         res = arr[0]
-        if not res >= 0:
+        if not (0 <= res < np.inf):
             raise ValueError
         return res
     except ValueError:
