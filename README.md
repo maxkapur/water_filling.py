@@ -32,5 +32,3 @@ python -m water_filling  # serve to localhost
 
 - Organize `interface.py` into a `routes.py` with just the routes and a new file
   with the parsing/error handling/caching logic.
-- Test caching behavior. Use Pytest monkeypatch to start tests with no cache
-  and then test that it is populated and used.

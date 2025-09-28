@@ -1,9 +1,10 @@
+import sqlite3
 from collections import namedtuple
 
 import pytest
 from microdot.test_client import TestClient
 
-from water_filling import app
+from water_filling import app, interface
 
 WaterFillingTriple = namedtuple("WaterFillingTriple", "heights volume level".split())
 
@@ -29,6 +30,10 @@ def triple(request):
     yield request.param
 
 
-@pytest.fixture(scope="module")
-def client():
-    return TestClient(app)
+@pytest.fixture(scope="function")
+def client(monkeypatch, tmp_path):
+    db_path = tmp_path / "water_filling.cache.db"
+    con = sqlite3.connect(db_path)
+    with monkeypatch.context() as m:
+        m.setattr(interface, "con", con)
+        yield TestClient(app)

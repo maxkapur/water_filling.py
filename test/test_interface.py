@@ -16,12 +16,19 @@ async def test_get_level_html(client, triple):
     path = to_level_path(triple)
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
+    # Not cached (depends on correct monkeypatching in conftest.py)
+    assert "cache" not in resp.text
 
     level_esc = re.escape(str(triple.level))
     if np.isclose(triple.level, 0.0, atol=1e-5):
         assert re.search(rf"<strong>-?{level_esc}\d*</strong>", resp.text), level_esc
     else:
         assert re.search(rf"<strong>{level_esc}\d*</strong>", resp.text), level_esc
+
+    # Issue the same request again, ensure it was pulled from cache
+    resp2 = await client.get(path, headers={"Accept": "text/html"})
+    assert resp2.status_code == 200
+    assert "cache" in resp2.text
 
 
 @pytest.mark.asyncio
@@ -39,4 +46,19 @@ async def test_get_level_json(client, triple):
     resp = await client.get(path, headers={"Accept": "application/json"})
     assert resp.status_code == 200
     content = json.loads(resp.text)
+    assert content["heights"] == triple.heights
+    assert content["volume"] == triple.volume
     assert np.isclose(content["level"], triple.level, atol=1e-5)
+    assert "http://www.w3.org/2000/svg" in content["svg"]
+    # Not cached (depends on correct monkeypatching in conftest.py)
+    assert content["cached"] is False
+
+    # Issue the same request again, ensure it was pulled from cache
+    resp2 = await client.get(path, headers={"Accept": "application/json"})
+    assert resp2.status_code == 200
+    content2 = json.loads(resp2.text)
+    assert content2["heights"] == triple.heights
+    assert content2["volume"] == triple.volume
+    assert np.isclose(content2["level"], triple.level, atol=1e-5)
+    assert "http://www.w3.org/2000/svg" in content2["svg"]
+    assert content2["cached"] is True
