@@ -9,7 +9,7 @@ from microdot.jinja import Template
 
 from . import water_filling
 from .database import get_level_as_dict_from_parsed
-from .serialization import englishify, heights_parser, maybe_int, volume_parser
+from .serialization import englishify, maybe_int, parse_heights, parse_volume
 
 static_path = Path(__file__).parent / "static"
 app = Microdot()
@@ -29,8 +29,8 @@ populate_globals()
 
 @app.get("/level")
 async def get_level(request):
-    heights = heights_parser(request.args.get("heights"))
-    volume = volume_parser(request.args.get("volume"))
+    heights = parse_heights(request.args.get("heights"))
+    volume = parse_volume(request.args.get("volume"))
     if heights is None or volume is None:
         return "Bad request", 400
 
@@ -73,9 +73,9 @@ async def post_level(request):
     volume_str = request.form.get("volume")
 
     errors = []
-    if heights_parser(heights_str) is None:
+    if parse_heights(heights_str) is None:
         errors.append("Invalid heights input")
-    if volume_parser(volume_str) is None:
+    if parse_volume(volume_str) is None:
         errors.append("Invalid volume input")
     if errors:
         error_str = ";".join(errors)

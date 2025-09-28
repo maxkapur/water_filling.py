@@ -6,7 +6,7 @@ import numpy as np
 
 
 @functools.lru_cache(maxsize=1024)
-def volume_parser(s):
+def parse_volume(s):
     try:
         arr = np.fromstring(s, sep=",")
         if not arr.size == 1:
@@ -20,7 +20,7 @@ def volume_parser(s):
 
 
 @functools.lru_cache(maxsize=1024)
-def heights_parser(s):
+def parse_heights(s):
     try:
         res = np.fromstring(s, sep=",")
         if not res.ndim == 1:

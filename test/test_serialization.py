@@ -14,8 +14,8 @@ from water_filling import serialization
         ("3", 3.0),
     ],
 )
-def test_volume_parser(s, volume):
-    parsed = serialization.volume_parser(s)
+def test_parse_volume(s, volume):
+    parsed = serialization.parse_volume(s)
     assert isinstance(parsed, np.float64)
     assert volume == parsed
 
@@ -32,8 +32,8 @@ def test_volume_parser(s, volume):
         "1,2,3",
     ],
 )
-def test_volume_parser__bad(s):
-    assert serialization.volume_parser(s) is None
+def test_parse_volume__bad(s):
+    assert serialization.parse_volume(s) is None
 
 
 @pytest.mark.parametrize(
@@ -49,8 +49,8 @@ def test_volume_parser__bad(s):
         ("3," * 2**4, [3] * 2**4),
     ],
 )
-def test_heights_parser(s, heights):
-    parsed = serialization.heights_parser(s)
+def test_parse_heights(s, heights):
+    parsed = serialization.parse_heights(s)
     assert isinstance(parsed[0], np.float64)
     assert np.all(heights == parsed)
 
@@ -65,5 +65,5 @@ def test_heights_parser(s, heights):
         "3," * 2**16,
     ],
 )
-def test_heights_parser__bad(s):
-    assert serialization.heights_parser(s) is None
+def test_parse_heights__bad(s):
+    assert serialization.parse_heights(s) is None
