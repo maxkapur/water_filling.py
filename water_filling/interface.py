@@ -10,6 +10,7 @@ from microdot import Microdot, redirect
 from microdot.jinja import Template
 
 from . import water_filling
+from .visualize import visualize
 
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
 cache_path.parent.mkdir(parents=True, exist_ok=True)
@@ -136,7 +137,7 @@ def get_level_as_dict_from_parsed(heights, volume):
         }
 
     level = water_filling.level(heights, volume)
-    fig, ax = water_filling.visualize(heights, level)
+    fig, ax = visualize(heights, level)
     with io.StringIO() as buf:
         fig.savefig(buf, format="svg")
         svg_data = buf.getvalue()
