@@ -33,9 +33,15 @@ def triple(request):
 
 
 @pytest.fixture(scope="function")
-def client(monkeypatch, tmp_path):
+def mock_db(monkeypatch, tmp_path):
+    """Fixture that mocks the DB to a temporary file to test caching."""
     db_path = tmp_path / "water_filling.cache.db"
     con = sqlite3.connect(db_path)
     with monkeypatch.context() as m:
         m.setattr(database, "con", con)
-        yield TestClient(app)
+        yield
+
+
+@pytest.fixture(scope="function")
+def client(mock_db):
+    yield TestClient(app)
