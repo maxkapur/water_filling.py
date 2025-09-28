@@ -26,8 +26,3 @@ python -m pip install --editable .[dev]
 python -m pytest  # run tests
 python -m water_filling  # serve to localhost
 ```
-
-## Ideas
-
-- Organize `interface.py` into a `routes.py` with just the routes and a new file
-  with the parsing/error handling/caching logic.
