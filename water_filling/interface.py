@@ -1,4 +1,3 @@
-import functools
 import io
 import sqlite3
 from pathlib import Path
@@ -10,6 +9,7 @@ from microdot import Microdot, redirect
 from microdot.jinja import Template
 
 from . import water_filling
+from .serialization import englishify, heights_parser, volume_parser
 from .visualize import visualize
 
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
@@ -29,63 +29,6 @@ def populate_globals():
 
 
 populate_globals()
-
-
-@functools.lru_cache(maxsize=1024)
-def volume_parser(s):
-    try:
-        arr = np.fromstring(s, sep=",")
-        if not arr.size == 1:
-            raise ValueError
-        res = arr[0]
-        if not res >= 0:
-            raise ValueError
-        return res
-    except ValueError:
-        return None
-
-
-@functools.lru_cache(maxsize=1024)
-def heights_parser(s):
-    try:
-        res = np.fromstring(s, sep=",")
-        if not res.ndim == 1:
-            raise ValueError
-        if not 0 < res.size < 2**16:
-            raise ValueError
-        if not np.isfinite(res).all():
-            raise ValueError
-        return res
-    except ValueError:
-        return None
-
-
-def englishify(list_of_numbers):  # anglicize?
-    """Convert a list of numbers to a running-text representation.
-
-    For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`.
-    """
-    match len(list_of_numbers):
-        case 0:
-            raise ValueError("Empty list")
-        case 1:
-            return str(list_of_numbers[0])
-        case 2:
-            return f"{list_of_numbers[0]} and {list_of_numbers[1]}"
-        case _:
-            return (
-                ", ".join(str(x) for x in list_of_numbers[:-1])
-                + f", and {list_of_numbers[-1]}"
-            )
-
-
-def random_str_input():
-    n = water_filling.rng.integers(10, 21)
-    heights = water_filling.rng.integers(0, 21, size=n)
-    volume = water_filling.rng.integers(1, n * 15)
-    heights_str = ",".join(str(x) for x in heights)
-    volume_str = str(volume)
-    return heights_str, volume_str
 
 
 @app.get("/level")
@@ -193,3 +136,13 @@ async def post_level(request):
 async def get_random(request):
     heights_str, volume_str = random_str_input()
     return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
+
+
+def random_str_input():
+    """Random problem instance, formatted as strings to insert in URL."""
+    n = water_filling.rng.integers(10, 21)
+    heights = water_filling.rng.integers(0, 21, size=n)
+    volume = water_filling.rng.integers(1, n * 15)
+    heights_str = ",".join(str(x) for x in heights)
+    volume_str = str(volume)
+    return heights_str, volume_str
