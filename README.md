@@ -1,8 +1,4 @@
-# water_filling.py
-
-Water-filling algorithm with Microdot frontend.
-
-## About
+# Water filling
 
 This site demonstrates the water-filling problem: Given an uneven tub defined by
 a list of **heights** and a certain **volume** of water, what will the **level**
@@ -18,6 +14,8 @@ method](https://en.wikipedia.org/wiki/Secant_method) used here.
 The main purpose of this project is to play with the
 [Microdot](https://microdot.readthedocs.io/en/latest/index.html) framework and
 practice some standard routing and caching patterns.
+
+<!-- end_site_header -->
 
 ## Usage
 

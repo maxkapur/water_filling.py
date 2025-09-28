@@ -4,6 +4,7 @@ import sqlite3
 from pathlib import Path
 from urllib.parse import quote
 
+import mistune
 import numpy as np
 from microdot import Microdot, redirect
 from microdot.jinja import Template
@@ -16,6 +17,17 @@ con = sqlite3.connect(cache_path)
 
 app = Microdot()
 Template.initialize(Path(__file__).parent / "templates")
+
+
+def populate_globals():
+    with open(Path(__file__).parent.parent / "README.md") as markdown_file:
+        readme_markdown = markdown_file.read()
+    header_markdown, *_ = readme_markdown.split("<!-- end_site_header -->")
+    header_markdown = header_markdown.strip()
+    Template.jinja_env.globals["header_html"] = mistune.html(header_markdown)
+
+
+populate_globals()
 
 
 @functools.lru_cache(maxsize=1024)

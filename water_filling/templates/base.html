@@ -6,23 +6,7 @@
 </head>
 <body>
   <header>
-    <h1>Water filling</h1>
-    <p>
-      This site demonstrates the water-filling problem: Given an uneven tub
-      defined by a list of <strong>heights</strong> and a certain
-      <strong>volume</strong> of water, what will the <strong>level</strong> of
-      the water be once it has sloshed around and stabilized?
-    </p>
-    <p>
-      The water-filling problem can be solved by deriving the function for
-      <code>volume(heights, level)</code>, the volume of water present when the
-      level is at a given value. Since this function is monotonically increasing
-      in <code>level</code>, we can find the level that contains the target
-      <strong>volume</strong> from the original problem using a root-finding
-      algorithm like bisection or the <a
-      href="https://en.wikipedia.org/wiki/Secant_method">secant method</a>
-      used here.
-    </p>
+    {{ header_html | safe }}
     <nav>
       <a href="/">Home</a> |
       <a href="/random">Random problem</a> |
