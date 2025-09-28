@@ -87,7 +87,7 @@ def get_level_as_dict_from_parsed(heights, volume):
     level = water_filling.level(heights, volume)
     fig, ax = visualize(heights, level)
     with io.StringIO() as buf:
-        fig.savefig(buf, format="svg")
+        fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight")
         svg_data = buf.getvalue()
     res = {
         "heights": heights.tolist(),

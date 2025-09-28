@@ -102,11 +102,10 @@ article {
     }
 
     figcaption {
-      border-bottom: 1px solid var(--fg-element);
       font-size: smaller;
+      text-align: center;
     }
   }
-
 }
 
 nav,
