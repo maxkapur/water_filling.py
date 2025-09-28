@@ -3,6 +3,7 @@
 from pathlib import Path
 from urllib.parse import quote
 
+import jinja2
 import mistune
 from microdot import Microdot, redirect
 from microdot.jinja import Template
@@ -10,12 +11,17 @@ from microdot.jinja import Template
 from . import colors, serialization
 from .database import get_level_as_dict_from_parsed
 
-static_path = Path(__file__).parent / "static"
-app = Microdot()
-Template.initialize(Path(__file__).parent / "templates")
 
+def initialize_app():
+    """Initialize `app` and populate Jinja template globals."""
+    app = Microdot()
 
-def populate_globals():
+    Template.initialize(
+        Path(__file__).parent / "templates",
+        # enable_async=True,
+        undefined=jinja2.StrictUndefined,
+    )
+
     with open(Path(__file__).parent.parent / "README.md") as markdown_file:
         readme_markdown = markdown_file.read()
     header_markdown, *_ = readme_markdown.split("<!-- end_site_header -->")
@@ -24,8 +30,10 @@ def populate_globals():
 
     Template.jinja_env.globals["colors"] = colors.colors
 
+    return app
 
-populate_globals()
+
+app = initialize_app()
 
 
 @app.get("/level")
