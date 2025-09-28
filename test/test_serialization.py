@@ -67,3 +67,60 @@ def test_parse_heights(s, heights):
 )
 def test_parse_heights__bad(s):
     assert serialization.parse_heights(s) is None
+
+
+@pytest.mark.parametrize(
+    "x,result",
+    [
+        (np.float64(1.0), 1),
+        (np.float64(-1.0), -1),
+        (np.float64(-0.0), 0),
+    ],
+)
+def test_maybe_int__scalar_becomes_int(x, result):
+    after = serialization.maybe_int(x)
+    assert isinstance(after, np.int_)
+    assert after == result
+
+
+@pytest.mark.parametrize(
+    "x,result",
+    [
+        (np.array([1.0, 3.0]), [1, 3]),
+        (np.array([-1.0, 3.0]), [-1, 3]),
+        (np.array([-0.0, 3.0]), [0, 3]),
+    ],
+)
+def test_maybe_int__array_becomes_int(x, result):
+    after = serialization.maybe_int(x)
+    assert isinstance(after[0], np.int_)
+    assert np.all(after == result)
+
+
+@pytest.mark.parametrize(
+    "x",
+    [
+        np.float64(3.5),
+        np.array([1, 2, 3.5, 4]),
+    ],
+)
+def test_maybe_int__no_change(x):
+    assert serialization.maybe_int(x) is x
+
+
+@pytest.mark.parametrize(
+    "list_of_numbers,s",
+    [
+        ([0], "0"),
+        ([0.0], "0"),
+        ([0.1], "0.1"),
+        ([0, 4], "0 and 4"),
+        ([0, 4.0], "0 and 4"),
+        ([0, 4.5], "0.0 and 4.5"),
+        ([0, -9, 4], "0, -9, and 4"),
+        ([0, -9, 4.0], "0, -9, and 4"),
+        ([0, -9, 4.5], "0.0, -9.0, and 4.5"),
+    ],
+)
+def test_englishify(list_of_numbers, s):
+    assert s == serialization.englishify(list_of_numbers)
