@@ -6,15 +6,19 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    {{ header_html | safe }}
-    <nav>
-      <a href="/">Home</a> |
-      <a href="/random">Random problem</a> |
-      <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
-    </nav>
-  </header>
-  {%- block content %}
-  {%- endblock %}
+  <main>
+    <header>
+      {{ header_html | safe }}
+      <nav>
+        <p>
+          <a href="/">Home</a> |
+          <a href="/random">Random problem</a> |
+          <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
+        </p>
+      </nav>
+    </header>
+    {%- block content %}
+    {%- endblock %}    
+  </main>
 </body>
 </html>
