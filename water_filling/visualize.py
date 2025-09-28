@@ -15,7 +15,11 @@ def visualize(heights, level):
     fig, ax = plt.subplots()
     hmax = np.max([heights.max(), level])
     hmin = heights.min()
-    hrange = hmax - hmin
+    if np.isclose(hrange := hmax - hmin, 0.0):
+        # Handle singularity when all heights == level
+        hmax += 0.5
+        hmin -= 0.5
+        hrange = hmax - hmin
     baseline = hmin - hrange  # Arbitrary value smaller than hmin
     xs = np.linspace(-0.5, heights.size - 0.5, 1000)
     ax.fill_between(
