@@ -26,7 +26,7 @@ practice some standard routing and caching patterns.
 python -m venv venv
 source ./venv/bin/activate.fish  # or appropriate command for your shell
 python -m pip install --editable .[dev]
-pytest  # run tests
+python -m pytest  # run tests
 python -m water_filling  # serve to localhost
 ```
 
