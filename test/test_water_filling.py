@@ -29,12 +29,7 @@ def test_volume__level_below_min(heights, level):
 
 def test_level(triple):
     """`water_filling.level()` correctly recovers volume."""
-    # Test cases should converge in far fewer iterations than the default limit
-    level_estimated = water_filling.level(
-        triple.heights, triple.volume, max_iterations=25
-    )
+    level_estimated = water_filling.level(triple.heights, triple.volume)
     volume_achieved = water_filling.volume(triple.heights, level_estimated)
     assert np.isclose(volume_achieved, triple.volume)
-    # Looser tolerance here because the secant search converges based on level,
-    # not volume, not level (which it doesn't know)
-    assert np.isclose(level_estimated, triple.level, atol=1e-5)
+    assert np.isclose(level_estimated, triple.level)

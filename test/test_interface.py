@@ -20,7 +20,7 @@ async def test_get_level_html(client, triple):
     assert "cache" not in resp.text
 
     level_esc = re.escape(str(triple.level))
-    if np.isclose(triple.level, 0.0, atol=1e-5):
+    if np.isclose(triple.level, 0.0):
         assert re.search(rf"<strong>-?{level_esc}\d*</strong>", resp.text), level_esc
     else:
         assert re.search(rf"<strong>{level_esc}\d*</strong>", resp.text), level_esc
@@ -48,7 +48,7 @@ async def test_get_level_json(client, triple):
     content = json.loads(resp.text)
     assert content["heights"] == triple.heights
     assert content["volume"] == triple.volume
-    assert np.isclose(content["level"], triple.level, atol=1e-5)
+    assert np.isclose(content["level"], triple.level)
     assert "http://www.w3.org/2000/svg" in content["svg"]
     # Not cached (depends on correct monkeypatching in conftest.py)
     assert content["cached"] is False
@@ -59,6 +59,6 @@ async def test_get_level_json(client, triple):
     content2 = json.loads(resp2.text)
     assert content2["heights"] == triple.heights
     assert content2["volume"] == triple.volume
-    assert np.isclose(content2["level"], triple.level, atol=1e-5)
+    assert np.isclose(content2["level"], triple.level)
     assert "http://www.w3.org/2000/svg" in content2["svg"]
     assert content2["cached"] is True

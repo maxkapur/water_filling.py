@@ -1,4 +1,4 @@
-"""NumPy implementation of secant method for the water-filling problem."""
+"""NumPy implementation of linear interpolation method for water-filling."""
 
 import numpy as np
 
@@ -25,32 +25,32 @@ def volume(heights, level):
     return np.clip(level - heights, 0, np.inf).sum()
 
 
-def level(heights, target_volume, max_iterations=5000):
-    """Determine the level such that `volume(heights, level) = target_volume.`
+def level(heights, target_volume):
+    """Determine `level` such that `volume(heights, level) = target_volume.`
 
-    Uses the secant method.
+    Use linear interpolation.
     """
     if not target_volume >= 0.0:
         raise ValueError(volume)
 
-    heights = np.asarray(heights)
-    lo = heights.min()
-    lo_volume = volume(heights, lo)
-    hi = heights.max() + target_volume / heights.size
-    hi_volume = volume(heights, hi)
+    # Since volume(heights, level) is piecewise linear monotonic in the level,
+    # so is its inverse, hence it suffices to construct a vector of `volumes`
+    # corresponding to the volume when the level matches each values in
+    # `heights`. We could do this in quadratic time using `volume()` above, but
+    # here we do it in O(n log n) time by sorting the heights in advance.
 
-    for i in range(max_iterations):
-        frac = (target_volume - lo_volume) / (hi_volume - lo_volume)
-        mid = lo + frac * (hi - lo)
-        mid_volume = volume(heights, mid)
-        if np.isclose(mid_volume, target_volume):
-            return mid
+    # Interpolation will fail if the level exceeds the highest height; add a
+    # dummy height at the end that is guaranteed to be higher than the water
+    # level.
+    heights = np.sort(heights).astype(np.float64)
+    hi = heights[-1] + 1.1 * target_volume / heights.size
+    heights = np.append(heights, hi)
 
-        if mid_volume > target_volume:
-            hi = mid
-            hi_volume = mid_volume
-        else:
-            lo = mid
-            lo_volume = mid_volume
+    # When level increases from heights[i] to heights[i+1], volume increases by
+    # heights[i+1] - heights[i] (the diff) times the number of height elements
+    # that are less than heights[i+1] (== i). Hence
+    diff = np.diff(heights, prepend=heights[[0]])
+    volumes = (diff * np.arange(heights.size)).cumsum()
+    # volumes[i] = volume when level is exactly heights[i]
 
-    raise RecursionError(i)
+    return np.interp(target_volume, volumes, heights)
