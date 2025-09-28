@@ -3,14 +3,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .water_filling import rng
+from . import colors
+
+waveform = "triangle"
 
 
 def visualize(heights, level):
     """Visualize the water level with a given terrain."""
-    water_colors = "teal lightseagreen cornflowerblue tab:cyan".split()
-    terrain_colors = "slategray steelblue midnightblue".split()
-
     heights = np.asarray(heights)
     fig, ax = plt.subplots()
 
@@ -22,7 +21,13 @@ def visualize(heights, level):
         hmin -= 0.5
         hrange = hmax - hmin
     baseline = hmin - hrange  # Arbitrary value smaller than hmin
-    xs = np.linspace(-0.5, heights.size - 0.5, 1000)
+
+    if waveform == "triangle":
+        xs = np.linspace(-0.5, heights.size - 0.5, 12)
+        ys = level + 0.01 * hrange * np.power(-1, np.arange(xs.size))
+    elif waveform == "sine":
+        xs = np.linspace(-0.5, heights.size - 0.5, 1000)
+        ys = level + 0.01 * hrange * np.sin(25 * xs / heights.size)
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -32,18 +37,19 @@ def visualize(heights, level):
 
     ax.fill_between(
         xs,
-        level + 0.01 * hrange * np.sin(25 * xs / heights.size),
+        ys,
         y2=baseline,
-        hatch=".",
-        fc=rng.choice(water_colors),
+        fc=colors.colors["water"],
+        edgecolor=colors.colors["gray"],
     )
     ax.bar(
         np.arange(heights.size),
         heights - baseline,
         bottom=baseline,
         width=1.0,
-        fc=rng.choice(terrain_colors),
-        edgecolor="black",
+        hatch="x",
+        fc=colors.colors["terrain"],
+        edgecolor=colors.colors["gray"],
     )
 
     plt.close()

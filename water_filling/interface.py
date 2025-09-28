@@ -4,10 +4,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 import mistune
-from microdot import Microdot, redirect, send_file
+from microdot import Microdot, redirect
 from microdot.jinja import Template
 
-from . import water_filling
+from . import colors, water_filling
 from .database import get_level_as_dict_from_parsed
 from .serialization import englishify, maybe_int, parse_heights, parse_volume
 
@@ -22,6 +22,8 @@ def populate_globals():
     header_markdown, *_ = readme_markdown.split("<!-- end_site_header -->")
     header_markdown = header_markdown.strip()
     Template.jinja_env.globals["header_html"] = mistune.html(header_markdown)
+
+    Template.jinja_env.globals["colors"] = colors.colors
 
 
 populate_globals()
@@ -92,12 +94,12 @@ async def get_random(request):
     return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
 
 
-@app.route("/static/<path:path>")
-async def static(request, path):
-    if ".." in path:
-        # Disallow directory traversal
-        return "Not found", 404
-    return send_file(str(static_path / path), max_age=86400)
+@app.get("/style.css")
+async def get_style(request):
+    return Template("style.css").render(), {
+        "Content-Type": "text/css",
+        "Max-Age": 3600 * 24,
+    }
 
 
 def random_str_input():

@@ -1,9 +1,9 @@
 :root {
-  --fg-element: rgb(66, 66, 66);
+  --fg-element: {{ colors.gray }};
   --fg-text: black;
-  --bg: white;
-  --bg-alternate1: rgb(175, 229, 209);
-  --bg-alternate2: rgb(226, 198, 177);
+  --paper-color: {{ colors.paper }};
+  --water-color: {{ colors.water }};
+  --terrain-color: {{ colors.terrain }};
   --spacing-unit: 15px;
 
   font-size: 16px;
@@ -29,7 +29,7 @@ figcaption {
 body {
   font-family: sans-serif;
   color: var(--fg-text);
-  background: var(--bg);
+  background: var(--terrain-color);
 }
 
 p {
@@ -85,11 +85,11 @@ footer {
 }
 
 header {
-  background: var(--bg-alternate1);
+  background: var(--water-color);
 }
 
 article {
-  background: var(--bg-alternate2);
+  background: var(--paper-color);
 }
 
 form {
