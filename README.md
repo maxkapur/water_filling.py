@@ -26,3 +26,10 @@ python -m pip install --editable .[dev]
 python -m pytest  # run tests
 python -m water_filling  # serve to localhost
 ```
+
+## Ideas
+
+- Move cache logic to separate file
+- Add `created_at`, `accessed_at` columns to cache database and periodically
+  purge old records
+- CSS styling
