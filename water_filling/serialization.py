@@ -34,20 +34,27 @@ def heights_parser(s):
         return None
 
 
+def maybe_int(x):
+    """If `x` appears to be integer, return it as an integer."""
+    rounded = x.round().astype(np.int_)
+    if np.allclose(x, rounded):
+        return rounded
+    return x
+
+
 def englishify(list_of_numbers):  # anglicize?
     """Convert a list of numbers to a running-text representation.
 
     For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`.
     """
-    match len(list_of_numbers):
+    arr = np.asarray(list_of_numbers)
+    arr = maybe_int(arr)
+    match arr.size:
         case 0:
             raise ValueError("Empty list")
         case 1:
-            return str(list_of_numbers[0])
+            return str(arr[0])
         case 2:
-            return f"{list_of_numbers[0]} and {list_of_numbers[1]}"
+            return f"{arr[0]} and {arr[1]}"
         case _:
-            return (
-                ", ".join(str(x) for x in list_of_numbers[:-1])
-                + f", and {list_of_numbers[-1]}"
-            )
+            return ", ".join(str(x) for x in arr[:-1]) + f", and {arr[-1]}"

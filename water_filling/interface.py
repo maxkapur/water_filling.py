@@ -9,7 +9,7 @@ from microdot import Microdot, redirect, send_file
 from microdot.jinja import Template
 
 from . import water_filling
-from .serialization import englishify, heights_parser, volume_parser
+from .serialization import englishify, heights_parser, maybe_int, volume_parser
 from .visualize import visualize
 
 static_path = Path(__file__).parent / "static"
@@ -45,7 +45,7 @@ async def get_level(request):
     if "text/html" in accept:
         return Template("visualize.html").render(
             heights_str=englishify(heights),
-            volume_str=str(volume),
+            volume_str=str(maybe_int(volume)),
             level_str="%.2f" % as_dict["level"],
             svg_data=as_dict["svg"],
             cached=as_dict["cached"],
