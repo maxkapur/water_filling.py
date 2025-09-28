@@ -7,9 +7,8 @@ import mistune
 from microdot import Microdot, redirect
 from microdot.jinja import Template
 
-from . import colors, water_filling
+from . import colors, serialization
 from .database import get_level_as_dict_from_parsed
-from .serialization import englishify, maybe_int, parse_heights, parse_volume
 
 static_path = Path(__file__).parent / "static"
 app = Microdot()
@@ -31,8 +30,8 @@ populate_globals()
 
 @app.get("/level")
 async def get_level(request):
-    heights = parse_heights(request.args.get("heights"))
-    volume = parse_volume(request.args.get("volume"))
+    heights = serialization.parse_heights(request.args.get("heights"))
+    volume = serialization.parse_volume(request.args.get("volume"))
     if heights is None or volume is None:
         return "Bad request", 400
 
@@ -41,8 +40,8 @@ async def get_level(request):
 
     if "text/html" in accept:
         return Template("visualize.html").render(
-            heights_str=englishify(heights),
-            volume_str=str(maybe_int(volume)),
+            heights_str=serialization.englishify(heights),
+            volume_str=str(serialization.maybe_int(volume)),
             level_str="%.2f" % as_dict["level"],
             svg_data=as_dict["svg"],
             cached=as_dict["cached"],
@@ -57,7 +56,7 @@ async def get_level(request):
 
 @app.get("/")
 async def get_index(request):
-    heights_str, volume_str = random_str_input()
+    heights_str, volume_str = serialization.random_str_input()
     if errors_str := request.args.get("errors"):
         errors = errors_str.split(";")
     else:
@@ -75,9 +74,9 @@ async def post_level(request):
     volume_str = request.form.get("volume")
 
     errors = []
-    if parse_heights(heights_str) is None:
+    if serialization.parse_heights(heights_str) is None:
         errors.append("Invalid heights input")
-    if parse_volume(volume_str) is None:
+    if serialization.parse_volume(volume_str) is None:
         errors.append("Invalid volume input")
     if errors:
         error_str = ";".join(errors)
@@ -90,7 +89,7 @@ async def post_level(request):
 
 @app.get("/random")
 async def get_random(request):
-    heights_str, volume_str = random_str_input()
+    heights_str, volume_str = serialization.random_str_input()
     return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
 
 
@@ -100,13 +99,3 @@ async def get_style(request):
         "Content-Type": "text/css",
         "Max-Age": 3600 * 24,
     }
-
-
-def random_str_input():
-    """Random problem instance, formatted as strings to insert in URL."""
-    n = water_filling.rng.integers(10, 21)
-    heights = water_filling.rng.integers(0, 21, size=n)
-    volume = water_filling.rng.integers(1, n * 15)
-    heights_str = ",".join(str(x) for x in heights)
-    volume_str = str(volume)
-    return heights_str, volume_str
