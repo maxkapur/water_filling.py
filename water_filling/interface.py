@@ -62,29 +62,27 @@ def get_level_as_dict_from_parsed(heights, volume):
     """Wrapper to compute the level and visualization with a sqlite cache."""
     heights_bytes = heights.tobytes()
 
-    with con:
-        con.execute("""
-        CREATE TABLE IF NOT EXISTS water_filling (
-            heights BLOB,
-            volume REAL,
-            level REAL,
-            svg TEXT
-        ) STRICT
-        """)
-        cur = con.execute(
-            "SELECT level, svg FROM water_filling WHERE heights=? AND volume=?",
-            (heights_bytes, volume),
-        )
-        if fetched := cur.fetchone():
-            level = np.float64(fetched[0])
-            svg_data = fetched[1]
-            return {
-                "heights": heights.tolist(),
-                "volume": volume,
-                "level": level,
-                "svg": svg_data,
-                "cached": True,
-            }
+    con.execute("""
+    CREATE TABLE IF NOT EXISTS water_filling (
+        heights BLOB,
+        volume REAL,
+        level REAL,
+        svg TEXT
+    ) STRICT
+    """)
+    if fetched := con.execute(
+        "SELECT level, svg FROM water_filling WHERE heights=? AND volume=?",
+        (heights_bytes, volume),
+    ).fetchone():
+        level = np.float64(fetched[0])
+        svg_data = fetched[1]
+        return {
+            "heights": heights.tolist(),
+            "volume": volume,
+            "level": level,
+            "svg": svg_data,
+            "cached": True,
+        }
 
     level = water_filling.level(heights, volume)
     fig, ax = visualize(heights, level)
