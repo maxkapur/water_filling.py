@@ -23,6 +23,8 @@ WaterFillingTriple = namedtuple("WaterFillingTriple", "heights volume level".spl
         WaterFillingTriple([-1, 2, -3, -4], 12.5, 1.5),
         WaterFillingTriple([-1, 2, -3, -4], 14.0, 2.0),
         WaterFillingTriple([-1, 2, -3, -4], 18.0, 3.0),
+        WaterFillingTriple([4, 4, 4, 4], 0.0, 4.0),
+        WaterFillingTriple([4, 4, 4, 4], 8.0, 6.0),
     ],
 )
 def triple(request):
