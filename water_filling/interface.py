@@ -5,13 +5,14 @@ from urllib.parse import quote
 
 import mistune
 import numpy as np
-from microdot import Microdot, redirect
+from microdot import Microdot, redirect, send_file
 from microdot.jinja import Template
 
 from . import water_filling
 from .serialization import englishify, heights_parser, volume_parser
 from .visualize import visualize
 
+static_path = Path(__file__).parent / "static"
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
 cache_path.parent.mkdir(parents=True, exist_ok=True)
 con = sqlite3.connect(cache_path)
@@ -136,6 +137,14 @@ async def post_level(request):
 async def get_random(request):
     heights_str, volume_str = random_str_input()
     return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
+
+
+@app.route("/static/<path:path>")
+async def static(request, path):
+    if ".." in path:
+        # Disallow directory traversal
+        return "Not found", 404
+    return send_file(str(static_path / path), max_age=86400)
 
 
 def random_str_input():
