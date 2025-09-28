@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "water_filling"
 version = "0.1.0"
 dependencies = [
+  "aiosqlite",
   "jinja2",
   "matplotlib",
   "microdot",

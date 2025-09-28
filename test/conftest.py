@@ -1,4 +1,3 @@
-import sqlite3
 from collections import namedtuple
 
 import pytest
@@ -34,8 +33,7 @@ def triple(request):
 
 @pytest.fixture(scope="function")
 def client(monkeypatch, tmp_path):
-    db_path = tmp_path / "water_filling.cache.db"
-    con = sqlite3.connect(db_path)
+    cache_path = tmp_path / "water_filling.cache.db"
     with monkeypatch.context() as m:
-        m.setattr(interface, "con", con)
+        m.setattr(interface, "cache_path", cache_path)
         yield TestClient(app)
