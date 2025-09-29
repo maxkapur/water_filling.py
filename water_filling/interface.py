@@ -18,7 +18,7 @@ def initialize_app():
 
     Template.initialize(
         Path(__file__).parent / "templates",
-        # enable_async=True,
+        enable_async=True,
         undefined=jinja2.StrictUndefined,
     )
 
@@ -47,13 +47,14 @@ async def get_level(request):
     as_dict = get_level_as_dict_from_parsed(heights, volume)
 
     if "text/html" in accept:
-        return Template("visualize.html").render(
+        html = await Template("visualize.html").render_async(
             heights_str=serialization.englishify(heights),
             volume_str=str(serialization.maybe_int(volume)),
             level_str="%.2f" % as_dict["level"],
             svg_data=as_dict["svg"],
             cached=as_dict["cached"],
-        ), {"Content-Type": "text/html"}
+        )
+        return html, {"Content-Type": "text/html"}
 
     if "image/svg" in accept:
         return as_dict["svg"], {"Content-Type": "image/svg"}
@@ -69,11 +70,12 @@ async def get_index(request):
         errors = errors_str.split(";")
     else:
         errors = []
-    return Template("form.html").render(
+    html = await Template("form.html").render_async(
         heights_str=request.args.get("heights") or heights_str,
         volume_str=request.args.get("volume") or volume_str,
         errors=errors,
-    ), {"Content-Type": "text/html"}
+    )
+    return html, {"Content-Type": "text/html"}
 
 
 @app.post("/level")
@@ -103,7 +105,8 @@ async def get_random(request):
 
 @app.get("/style.css")
 async def get_style(request):
-    return Template("style.css").render(), {
+    css = await Template("style.css").render_async()
+    return css, {
         "Content-Type": "text/css",
         "Max-Age": 3600 * 24,
     }
