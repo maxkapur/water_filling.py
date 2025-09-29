@@ -1,9 +1,12 @@
 :root {
+  /* beautify ignore:start */
   --fg-element: {{ colors.gray }};
-  --fg-text: black;
   --paper-color: {{ colors.paper }};
   --water-color: {{ colors.water }};
   --terrain-color: {{ colors.terrain }};
+  /* beautify ignore:end */
+
+  --fg-text: black;
   --spacing-unit: 15px;
 
   font-size: 16px;
@@ -24,6 +27,11 @@ figure,
 figcaption {
   margin: 0;
   padding: 0;
+}
+
+ul,
+ol {
+  margin: calc(var(--spacing-unit) / 2) 0;
 }
 
 body {
@@ -90,6 +98,10 @@ header {
 
 article {
   background: var(--paper-color);
+}
+
+.form-errors {
+  color: #ba2140;
 }
 
 form {

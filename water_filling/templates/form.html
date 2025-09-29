@@ -2,14 +2,16 @@
 {%- block content %}
 <article>
   {%- if errors %}
-  <p>
-    Please correct the following errors:
-  </p>
-  <ul>
-    {%- for error in errors %}
-    <li>{{ error }}</li>
-    {%- endfor %}
-  </ul>
+  <div class="form-errors">
+    <p>
+      Please correct the following errors:
+    </p>
+    <ul>
+      {%- for error in errors %}
+      <li>{{ error }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
   {%- endif %}
   <form action="/level" accept-charset="utf-8" method="POST">
     <div><strong>Solve your own water-filling problem.</strong></div>
