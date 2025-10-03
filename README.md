@@ -29,6 +29,7 @@ python -m water_filling  # serve to localhost
 
 ## Ideas
 
-- Move cache logic to separate file
+- Asynchronously prepare a queue of random instances so requests can be served
+  immediately 
 - Add `created_at`, `accessed_at` columns to cache database and periodically
   purge old records
