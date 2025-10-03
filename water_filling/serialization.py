@@ -25,7 +25,10 @@ def parse_volume(s):
 @functools.lru_cache(maxsize=1024)
 def parse_heights(s):
     try:
-        res = np.fromstring(s, sep=",")
+        if "." in s:
+            res = np.fromstring(s, sep=",", dtype=np.float64)
+        else:
+            res = np.fromstring(s, sep=",", dtype=np.int_)
         if not res.ndim == 1:
             raise ValueError
         if not 0 < res.size < 2**16:

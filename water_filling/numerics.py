@@ -54,3 +54,11 @@ def level(heights, target_volume):
     # volumes[i] = volume when level is exactly heights[i]
 
     return np.interp(target_volume, volumes, heights)
+
+
+def random():
+    """Random problem instance `(heights, volume)`."""
+    n = rng.integers(10, 21)
+    heights = rng.integers(0, 21, size=n)
+    volume = rng.integers(1, n * 15)
+    return heights, volume

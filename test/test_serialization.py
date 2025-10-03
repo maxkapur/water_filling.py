@@ -11,12 +11,28 @@ from water_filling import serialization
         ("-0.0", 0.0),
         ("1.5", 1.5),
         ("1.500", 1.5),
-        ("3", 3.0),
+        ("3.0", 3.0),
     ],
 )
-def test_parse_volume(s, volume):
+def test_parse_volume__float(s, volume):
     parsed = serialization.parse_volume(s)
     assert isinstance(parsed, np.float64)
+    assert volume == parsed
+
+
+@pytest.mark.parametrize(
+    "s,volume",
+    [
+        ("0", 0),
+        ("-0", 0),
+        ("1", 1),
+        ("1500", 1500),
+        ("3", 3),
+    ],
+)
+def test_parse_volume__int(s, volume):
+    parsed = serialization.parse_volume(s)
+    assert isinstance(parsed, np.int_)
     assert volume == parsed
 
 
@@ -39,19 +55,37 @@ def test_parse_volume__bad(s):
 @pytest.mark.parametrize(
     "s,heights",
     [
-        ("-1,2,-3,4", [-1, 2, -3, 4]),
+        ("-1,2.0,-3,4", [-1, 2, -3, 4]),
         ("-1.0,2.5,-3.0,4.0", [-1, 2.5, -3, 4]),
+        ("-1,2,-3,4.,", [-1, 2, -3, 4]),
+        ("-1.0, 2, -3.0, 4", [-1, 2, -3, 4]),
+        ("-1,2.,-3,4", [-1, 2, -3, 4]),
+        ("3.0", [3]),
+        ("3.0,", [3]),
+        ("3.0," * 2**4, [3] * 2**4),
+    ],
+)
+def test_parse_heights__float(s, heights):
+    parsed = serialization.parse_heights(s)
+    assert isinstance(parsed[0], np.float64)
+    assert np.all(heights == parsed)
+
+
+@pytest.mark.parametrize(
+    "s,heights",
+    [
+        ("-1,2,-3,4", [-1, 2, -3, 4]),
         ("-1,2,-3,4,", [-1, 2, -3, 4]),
-        ("-1, 2, -3.0, 4", [-1, 2, -3, 4]),
+        ("-1, 2, -3  , 4", [-1, 2, -3, 4]),
         ("-1,2,-3,4", [-1, 2, -3, 4]),
         ("3", [3]),
         ("3,", [3]),
         ("3," * 2**4, [3] * 2**4),
     ],
 )
-def test_parse_heights(s, heights):
+def test_parse_heights__int(s, heights):
     parsed = serialization.parse_heights(s)
-    assert isinstance(parsed[0], np.float64)
+    assert isinstance(parsed[0], np.int_)
     assert np.all(heights == parsed)
 
 

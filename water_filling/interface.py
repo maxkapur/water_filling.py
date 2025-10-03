@@ -9,7 +9,7 @@ import mistune
 from microdot import Microdot, redirect
 from microdot.jinja import Template
 
-from . import colors, serialization, water_filling
+from . import colors, numerics, serialization
 from .database import get_level_as_dict_from_parsed
 
 
@@ -37,13 +37,7 @@ def initialize_app():
 app = initialize_app()
 
 
-@app.get("/level")
-async def get_level(request):
-    heights = serialization.parse_heights(request.args.get("heights"))
-    volume = serialization.parse_volume(request.args.get("volume"))
-    if heights is None or volume is None:
-        return "Bad request", 400
-
+async def fulfill(request, heights, volume):
     accept = request.headers.get("Accept", "").lower()
     as_dict = get_level_as_dict_from_parsed(heights, volume)
 
@@ -54,6 +48,7 @@ async def get_level(request):
             level_str="%.2f" % as_dict["level"],
             svg_data=as_dict["svg"],
             cached=as_dict["cached"],
+            permalink=to_path(*to_strs(heights, volume)),
         )
         return html, {"Content-Type": "text/html"}
 
@@ -64,9 +59,29 @@ async def get_level(request):
     return as_dict
 
 
+@app.get("/level")
+async def get_level(request):
+    heights = serialization.parse_heights(request.args.get("heights"))
+    volume = serialization.parse_volume(request.args.get("volume"))
+    if heights is None or volume is None:
+        return "Bad request", 400
+
+    return await fulfill(request, heights, volume)
+
+
+def to_strs(heights, volume):
+    return ",".join(str(x) for x in heights), str(volume)
+
+
+def to_path(heights_str, volume_str):
+    return f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
+
+
 @app.get("/")
 async def get_index(request):
-    heights_str, volume_str = serialization.random_str_input()
+    heights, volume = numerics.random()
+    heights_str, volume_str = to_strs(heights, volume)
+
     if errors_str := request.args.get("errors"):
         errors = errors_str.split(";")
     else:
@@ -95,29 +110,14 @@ async def post_level(request):
             f"/?errors={quote(error_str)}&heights={quote(heights_str)}&volume={quote(volume_str)}"
         )
 
-    return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
-
-
-async def random_redirect():
-    n = water_filling.rng.integers(10, 21)
-    heights = water_filling.rng.integers(0, 21, size=n)
-    volume = water_filling.rng.integers(1, n * 15)
-    heights_str = ",".join(str(x) for x in heights)
-    volume_str = str(volume)
-    path = f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
-
-    get_level_as_dict_from_parsed(heights, volume)
-    return redirect(path)
+    return redirect(to_path(heights_str, volume_str))
 
 
 @app.get("/random")
 async def get_random(request):
-    if bench:
-        print("Serving random from bench")
-        response = bench.pop()
-        return response
-    print("Serving fresh random")
-    return await random_redirect()
+    heights, volume = numerics.random()
+
+    return await fulfill(request, heights, volume)
 
 
 @app.get("/style.css")
@@ -129,18 +129,6 @@ async def get_style(request):
     }
 
 
-bench = []
-
-
-async def replenish_bench():
-    while True:
-        shortfall = 4 - len(bench)
-        gathered = await asyncio.gather(*(random_redirect() for _ in range(shortfall)))
-        bench.extend(gathered)
-        await asyncio.sleep(1)
-
-
 async def main():
     server = asyncio.create_task(app.start_server())
-    bench_replenisher = asyncio.create_task(replenish_bench())
-    await asyncio.gather(server, bench_replenisher)
+    await server

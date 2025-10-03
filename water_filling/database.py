@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import water_filling
+from . import numerics
 from .visualize import visualize
 
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
@@ -41,7 +41,7 @@ def get_level_as_dict_from_parsed(heights, volume):
             "cached": True,
         }
 
-    level = water_filling.level(heights, volume)
+    level = numerics.level(heights, volume)
     fig, ax = visualize(heights, level)
     with io.StringIO() as buf:
         fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight")
