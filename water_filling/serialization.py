@@ -8,7 +8,10 @@ import numpy as np
 @functools.lru_cache(maxsize=1024)
 def parse_volume(s):
     try:
-        arr = np.fromstring(s, sep=",")
+        if "." in s:
+            arr = np.fromstring(s, sep=",", dtype=np.float64)
+        else:
+            arr = np.fromstring(s, sep=",", dtype=np.int_)
         if not arr.size == 1:
             raise ValueError
         res = arr[0]
