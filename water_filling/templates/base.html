@@ -11,14 +11,19 @@
       {{ header_html | safe }}
       <nav>
         <p>
-          <a href="/">Home</a> |
-          <a href="/random">Random problem</a> |
-          <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
+          {%- block navlist %}
+          <a href="/">Home</a>
+          | <a href="/random">Random problem</a>
+          | <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
+          {%- endblock %}
         </p>
       </nav>
     </header>
-    {%- block content %}
-    {%- endblock %}    
+    <article>
+      {%- block content %}
+      <h1>Placeholder</h1>
+      {%- endblock %}
+    </article>
   </main>
 </body>
 </html>

@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 {%- block content %}
-<article>
-  <p>
-    With terrain heights of <strong>{{ heights_str }}</strong> and a volume of
-    <strong>{{ volume_str }}</strong>, the level of water is
-    <strong>{{ level_str }}</strong>.
-  </p>
-  <div class="figure-wrapper">
-    <figure>
-      {{- svg_data | safe }}
-      <figcaption>Visualization of the water level.</figcaption>
-    </figure>
-  </div>
-  {%- if cached %}
-  <p>
-    <strong>You are not the first.</strong> The calculation and image above were
-    retrieved from the cache.
-  </p>
-  {%- endif %}
-</article>
+<p>
+  With terrain heights of <strong>{{ heights_str }}</strong> and a volume of
+  <strong>{{ volume_str }}</strong>, the level of water is
+  <strong>{{ level_str }}</strong>.
+</p>
+<div class="figure-wrapper">
+  <figure>
+    {{- svg_data | safe }}
+    <figcaption>Visualization of the water level.</figcaption>
+  </figure>
+</div>
+{%- if cached %}
+<p>
+  <strong>You are not the first.</strong> The calculation and image above were
+  retrieved from the cache.
+</p>
+{%- endif %}
 {%- endblock %}
