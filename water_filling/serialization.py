@@ -4,8 +4,6 @@ import functools
 
 import numpy as np
 
-from . import water_filling
-
 
 @functools.lru_cache(maxsize=1024)
 def parse_volume(s):
@@ -60,13 +58,3 @@ def englishify(list_of_numbers):  # anglicize?
             return f"{arr[0]} and {arr[1]}"
         case _:
             return ", ".join(str(x) for x in arr[:-1]) + f", and {arr[-1]}"
-
-
-def random_str_input():
-    """Random problem instance, formatted as strings to insert in URL."""
-    n = water_filling.rng.integers(10, 21)
-    heights = water_filling.rng.integers(0, 21, size=n)
-    volume = water_filling.rng.integers(1, n * 15)
-    heights_str = ",".join(str(x) for x in heights)
-    volume_str = str(volume)
-    return heights_str, volume_str

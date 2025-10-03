@@ -4,7 +4,8 @@ from collections import namedtuple
 import pytest
 from microdot.test_client import TestClient
 
-from water_filling import app, database
+from water_filling import database
+from water_filling.interface import app
 
 WaterFillingTriple = namedtuple("WaterFillingTriple", "heights volume level".split())
 

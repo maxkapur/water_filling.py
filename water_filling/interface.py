@@ -1,5 +1,6 @@
 """Microdot frontend."""
 
+import asyncio
 from pathlib import Path
 from urllib.parse import quote
 
@@ -8,7 +9,7 @@ import mistune
 from microdot import Microdot, redirect
 from microdot.jinja import Template
 
-from . import colors, serialization
+from . import colors, serialization, water_filling
 from .database import get_level_as_dict_from_parsed
 
 
@@ -97,10 +98,26 @@ async def post_level(request):
     return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
 
 
+async def random_redirect():
+    n = water_filling.rng.integers(10, 21)
+    heights = water_filling.rng.integers(0, 21, size=n)
+    volume = water_filling.rng.integers(1, n * 15)
+    heights_str = ",".join(str(x) for x in heights)
+    volume_str = str(volume)
+    path = f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
+
+    get_level_as_dict_from_parsed(heights, volume)
+    return redirect(path)
+
+
 @app.get("/random")
 async def get_random(request):
-    heights_str, volume_str = serialization.random_str_input()
-    return redirect(f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}")
+    if bench:
+        print("Serving random from bench")
+        response = bench.pop()
+        return response
+    print("Serving fresh random")
+    return await random_redirect()
 
 
 @app.get("/style.css")
@@ -110,3 +127,20 @@ async def get_style(request):
         "Content-Type": "text/css",
         "Max-Age": 3600 * 24,
     }
+
+
+bench = []
+
+
+async def replenish_bench():
+    while True:
+        shortfall = 4 - len(bench)
+        gathered = await asyncio.gather(*(random_redirect() for _ in range(shortfall)))
+        bench.extend(gathered)
+        await asyncio.sleep(1)
+
+
+async def main():
+    server = asyncio.create_task(app.start_server())
+    bench_replenisher = asyncio.create_task(replenish_bench())
+    await asyncio.gather(server, bench_replenisher)
