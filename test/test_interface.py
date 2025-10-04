@@ -65,9 +65,7 @@ async def test_get_random_html(client):
     path = "/random"
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
-    # Not cached (depends on correct monkeypatching in conftest.py)
     assert "cache" not in resp.text
-
     assert re.search(r"level\s+of\s+water\s+is\s+<strong>[\-\.\d]+</strong>", resp.text)
 
 
