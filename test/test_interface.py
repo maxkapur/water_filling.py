@@ -90,8 +90,8 @@ async def test_get_random_json(client):
     assert all(isinstance(x, int) for x in content["heights"])
     assert isinstance(content["volume"], int)
     assert isinstance(content["level"], float)
-    assert isinstance(content["heights_repr"], str)
-    assert isinstance(content["volume_repr"], str)
-    assert isinstance(content["level_repr"], str)
+    assert "heights_repr" not in content
+    assert "volume_repr" not in content
+    assert "level_repr" not in content
     assert "http://www.w3.org/2000/svg" in content["svg"]
     assert content["cached"] is False

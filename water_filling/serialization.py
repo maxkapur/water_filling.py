@@ -105,4 +105,17 @@ def to_json_serializable_dict(heights, volume, level, svg_data):
         "level_repr": "%.2f" % level,
         "svg": svg_data,
         "permalink": to_path(heights, volume),
+        # "cached": we don't know yet
+    }
+
+
+def filtered(response_dict):
+    """Filter output of `to_json_serializable_dict()`.
+
+    Leave only the keys that would be useful to a programmatic client.
+    """
+    return {
+        k: v
+        for k, v in response_dict.items()
+        if k in ["heights", "volume", "level", "svg", "permalink", "cached"]
     }

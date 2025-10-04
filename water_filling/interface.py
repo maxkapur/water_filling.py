@@ -49,7 +49,7 @@ async def fulfill(request, heights, volume, response_dict):
         return response_dict["svg"], {"Content-Type": "image/svg"}
 
     # Default to JSON
-    return response_dict
+    return serialization.filtered(response_dict)
 
 
 @app.get("/level")
