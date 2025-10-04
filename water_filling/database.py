@@ -16,22 +16,26 @@ con = sqlite3.connect(cache_path)
 
 
 def get_level_as_dict_from_parsed(heights, volume):
-    """Wrapper to compute the level and visualization with a sqlite cache."""
+    """Wrapper to compute the level and visualization with a sqlite cache.
+
+    Assume `heights` and `volume` have been parsed as NumPy types (array and
+    scalar)."""
     assert isinstance(heights, np.ndarray)
-    assert isinstance(volume, np.floating) or isinstance(volume, np.int_)
+    assert isinstance(volume, np.floating) or isinstance(volume, np.integer)
     heights_bytes = heights.tobytes()
+    volume_bytes = volume.tobytes()
 
     con.execute("""
     CREATE TABLE IF NOT EXISTS water_filling (
         heights BLOB,
-        volume REAL,
+        volume BLOB,
         level REAL,
         svg TEXT
     ) STRICT
     """)
     if fetched := con.execute(
         "SELECT level, svg FROM water_filling WHERE heights=? AND volume=?",
-        (heights_bytes, volume),
+        (heights_bytes, volume_bytes),
     ).fetchone():
         level = np.float64(fetched[0])
         svg_data = fetched[1]
@@ -65,6 +69,6 @@ def get_level_as_dict_from_parsed(heights, volume):
     with con:
         con.execute(
             "INSERT INTO water_filling VALUES (?,?,?,?)",
-            (heights_bytes, volume, level, svg_data),
+            (heights_bytes, volume_bytes, level, svg_data),
         )
     return res
