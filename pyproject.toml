@@ -6,11 +6,11 @@ build-backend = "hatchling.build"
 name = "water_filling"
 version = "0.1.0"
 dependencies = [
-  "jinja2",
-  "matplotlib",
-  "microdot",
-  "mistune",
-  "numpy",
+  "Jinja2 ~= 3.1",
+  "matplotlib ~= 3.10",
+  "microdot ~= 2.3",
+  "mistune ~= 3.1",
+  "numpy ~= 2.3",
 ]
 requires-python = "~= 3.12"
 authors = [
@@ -26,9 +26,9 @@ license-files = ["LICEN[CS]E.*"]
 
 [project.optional-dependencies]
 dev = [
-  "pytest",
-  "pytest-asyncio",
-  "ruff",
+  "pytest ~= 8.4",
+  "pytest-asyncio ~= 1.2",
+  "ruff ~= 0.13",
 ]
 
 [project.urls]
