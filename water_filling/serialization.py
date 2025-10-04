@@ -1,6 +1,7 @@
 """Helper functions for getting data in and out of strings."""
 
 import functools
+from urllib.parse import quote
 
 import numpy as np
 
@@ -38,6 +39,14 @@ def parse_heights(s):
         return res
     except ValueError:
         return None
+
+
+def to_strs(heights, volume):
+    return ",".join(str(x) for x in heights), str(volume)
+
+
+def to_path(heights_str, volume_str):
+    return f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
 
 
 def maybe_int(x):
