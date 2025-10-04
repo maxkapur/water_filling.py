@@ -143,18 +143,73 @@ def test_maybe_int__no_change(x):
 
 
 @pytest.mark.parametrize(
-    "list_of_numbers,s",
+    "vec,s",
     [
         ([0], "0"),
-        ([0.0], "0"),
+        ([0.0], "0.0"),
+        ([0.1], "0.1"),
+        ([0, 4], "0,4"),
+        ([0, 4.0], "0.0,4.0"),
+        ([0, 4.5], "0.0,4.5"),
+        ([0, -9, 4], "0,-9,4"),
+        ([0, -9, 4.0], "0.0,-9.0,4.0"),
+        ([0, -9, 4.5], "0.0,-9.0,4.5"),
+    ],
+)
+def test_to_str__vec(vec, s):
+    assert s == serialization.to_str(vec)
+
+
+@pytest.mark.parametrize(
+    "scalar,s",
+    [
+        (0, "0"),
+        (0.0, "0.0"),
+        (-0, "0"),
+        (-0.0, "-0.0"),
+        (1.4, "1.4"),
+        (4.0, "4.0"),
+        (-4, "-4"),
+        (-4.0, "-4.0"),
+    ],
+)
+def test_to_str__scalar(scalar, s):
+    assert s == serialization.to_str(scalar)
+
+
+@pytest.mark.parametrize(
+    "vec,s",
+    [
+        ([0], "0"),
+        ([0.0], "0.0"),
         ([0.1], "0.1"),
         ([0, 4], "0 and 4"),
-        ([0, 4.0], "0 and 4"),
+        ([0, 4.0], "0.0 and 4.0"),
         ([0, 4.5], "0.0 and 4.5"),
         ([0, -9, 4], "0, -9, and 4"),
-        ([0, -9, 4.0], "0, -9, and 4"),
+        ([0, -9, 4.0], "0.0, -9.0, and 4.0"),
         ([0, -9, 4.5], "0.0, -9.0, and 4.5"),
     ],
 )
-def test_englishify(list_of_numbers, s):
-    assert s == serialization.englishify(list_of_numbers)
+def test_to_english__vec(vec, s):
+    assert s == serialization.to_english(vec)
+
+
+# TODO: Use minus sign instead of -
+
+
+@pytest.mark.parametrize(
+    "scalar,s",
+    [
+        (0, "0"),
+        (0.0, "0.0"),
+        (-0, "0"),
+        (-0.0, "-0.0"),  # Fine
+        (1.4, "1.4"),
+        (4.0, "4.0"),
+        (-4, "-4"),
+        (-4.0, "-4.0"),
+    ],
+)
+def test_to_english__scalar(scalar, s):
+    assert s == serialization.to_english(scalar)

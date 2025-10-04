@@ -42,7 +42,9 @@ async def fulfill(request, heights, volume, response_dict):
     if "text/html" in accept:
         html = await Template("visualize.html").render_async(
             **response_dict,
-            permalink=serialization.to_path(*serialization.to_strs(heights, volume)),
+            permalink=serialization.to_path(
+                serialization.to_str(heights), serialization.to_str(volume)
+            ),
         )
         return html, {"Content-Type": "text/html"}
 
@@ -67,7 +69,8 @@ async def get_level(request):
 @app.get("/")
 async def get_index(request):
     heights, volume = numerics.random()
-    heights_str, volume_str = serialization.to_strs(heights, volume)
+    heights_str = serialization.to_str(heights)
+    volume_str = serialization.to_str(volume)
 
     if errors_str := request.args.get("errors"):
         errors = errors_str.split(";")

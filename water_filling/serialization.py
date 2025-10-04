@@ -41,11 +41,19 @@ def parse_heights(s):
         return None
 
 
-def to_strs(heights, volume):
-    return ",".join(str(x) for x in heights), str(volume)
+def to_str(vec_or_scalar):
+    """Convert numbers to a string representation.
+
+    Preserves dtypes and serializes for inclusion in the URL parameters.
+    """
+    arr = np.asanyarray(vec_or_scalar)
+    if arr.ndim == 0:
+        return str(arr.item())
+    return ",".join(str(x) for x in arr)
 
 
 def to_path(heights_str, volume_str):
+    """Escape stringified heights and volumes and compose a URL permalink."""
     return f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
 
 
@@ -57,13 +65,15 @@ def maybe_int(x):
     return x
 
 
-def englishify(array_or_scalar):  # anglicize?
-    """Convert a list of numbers to a running-text representation.
+def to_english(vec_or_scalar):
+    """Convert numbers to a running-text representation.
 
-    For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`.
+    For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`. In contrast to
+    `to_str()`, this method is for human readability in English. This method is
+    used to reflect a user's input parameters back to them, so it shows the full
+    precision available.
     """
-    arr = np.asanyarray(array_or_scalar)
-    arr = maybe_int(arr)
+    arr = np.asanyarray(vec_or_scalar)
     match arr.size:
         case 0:
             raise ValueError("Empty list")

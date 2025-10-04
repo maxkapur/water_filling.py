@@ -43,8 +43,9 @@ def get_level_as_dict_from_parsed(heights, volume):
             "heights": heights.tolist(),
             "volume": volume,
             "level": level,
-            "heights_repr": serialization.englishify(heights),
-            "volume_repr": serialization.englishify(volume),
+            "heights_repr": serialization.to_english(heights),
+            "volume_repr": serialization.to_english(volume),
+            # Computed value may be a crazy decimal, so truncate it
             "level_repr": "%.2f" % level,
             "svg": svg_data,
             "cached": True,
@@ -59,8 +60,9 @@ def get_level_as_dict_from_parsed(heights, volume):
         "heights": heights.tolist(),
         "volume": volume,
         "level": level,
-        "heights_repr": serialization.englishify(heights),
-        "volume_repr": serialization.englishify(volume),
+        "heights_repr": serialization.to_english(heights),
+        "volume_repr": serialization.to_english(volume),
+        # Computed value may be a crazy decimal, so truncate it
         "level_repr": "%.2f" % level,
         "svg": svg_data,
         "cached": False,
