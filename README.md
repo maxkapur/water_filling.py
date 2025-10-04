@@ -29,5 +29,6 @@ python -m water_filling  # serve to localhost
 
 ## Ideas
 
+- Add `config.toml` with options
 - Add `created_at`, `accessed_at` columns to cache database and periodically
   purge old records

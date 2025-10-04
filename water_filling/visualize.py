@@ -28,6 +28,10 @@ def visualize(heights, level):
     elif waveform == "sine":
         xs = np.linspace(-0.5, heights.size - 0.5, 1000)
         ys = level + 0.01 * hrange * np.sin(25 * xs / heights.size)
+        ys = level + 0.01 * hrange * np.power(-1, np.arange(xs.size))
+    elif waveform == "straight":
+        xs = np.array([-0.5, heights.size - 0.5])
+        ys = np.array([level, level])
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
