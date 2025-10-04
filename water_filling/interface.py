@@ -109,6 +109,7 @@ async def replenish_bench():
 
         for _ in range(shortfall):
             heights, volume = numerics.random()
+            # No sense caching random instances that may never even be accessed
             response_dict = database.fulfill_as_json_serializable_skip_cache(
                 heights, volume
             )
@@ -124,8 +125,9 @@ async def get_random(request):
         response_dict["bench"] = True
     else:
         heights, volume = numerics.random()
-        # Use the cache here in case the user wants to save permalink
-        response_dict = database.fulfill_as_json_serializable_with_cache(
+        # Skip cache for consistency with bench case; only upon clicking
+        # permalink will cache be saved
+        response_dict = database.fulfill_as_json_serializable_skip_cache(
             heights, volume
         )
     return await fulfill(request, response_dict)
