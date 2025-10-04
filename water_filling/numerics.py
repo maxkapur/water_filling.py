@@ -21,8 +21,8 @@ def volume(heights, level):
     terrain at index `0`, and `0.5` units of water at index `2`, for a total
     volume of `2.0`.
     """
-    heights = np.asarray(heights)
-    return np.clip(level - heights, 0, np.inf).sum()
+    heights = np.asanyarray(heights)
+    return np.clip(level - heights, 0, None).sum()
 
 
 def level(heights, target_volume):

@@ -10,7 +10,7 @@ waveform = "triangle"
 
 def visualize(heights, level):
     """Visualize the water level with a given terrain."""
-    heights = np.asarray(heights)
+    heights = np.asanyarray(heights)
     fig, ax = plt.subplots()
 
     hmax = np.max([heights.max(), level])
