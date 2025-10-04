@@ -46,7 +46,6 @@ async def test_get_level_json(client, triple):
     assert content["volume"] == triple.volume
     assert np.isclose(content["level"], triple.level)
     assert "http://www.w3.org/2000/svg" in content["svg"]
-    # Not cached (depends on correct monkeypatching in conftest.py)
     assert content["cached"] is False
 
     # Issue the same request again, ensure it was pulled from cache
@@ -58,3 +57,40 @@ async def test_get_level_json(client, triple):
     assert np.isclose(content2["level"], triple.level)
     assert "http://www.w3.org/2000/svg" in content2["svg"]
     assert content2["cached"] is True
+
+
+@pytest.mark.asyncio
+async def test_get_random_html(client):
+    path = "/random"
+    resp = await client.get(path, headers={"Accept": "text/html"})
+    assert resp.status_code == 200
+    # Not cached (depends on correct monkeypatching in conftest.py)
+    assert "cache" not in resp.text
+
+    assert re.search(r"level\s+of\s+water\s+is\s+<strong>[\-\.\d]+</strong>", resp.text)
+
+
+@pytest.mark.asyncio
+async def test_get_random_svg(client):
+    path = "/random"
+    resp = await client.get(path, headers={"Accept": "image/svg"})
+    assert resp.status_code == 200
+    assert "http://www.w3.org/2000/svg" in resp.text
+    assert resp.text.lower().strip().endswith("</svg>")
+
+
+@pytest.mark.asyncio
+async def test_get_random_json(client):
+    path = "/random"
+    resp = await client.get(path, headers={"Accept": "application/json"})
+    assert resp.status_code == 200
+    content = json.loads(resp.text)
+    assert isinstance(content["heights"], list)
+    assert all(isinstance(x, int) for x in content["heights"])
+    assert isinstance(content["volume"], int)
+    assert isinstance(content["level"], float)
+    assert isinstance(content["heights_repr"], str)
+    assert isinstance(content["volume_repr"], str)
+    assert isinstance(content["level_repr"], str)
+    assert "http://www.w3.org/2000/svg" in content["svg"]
+    assert content["cached"] is False

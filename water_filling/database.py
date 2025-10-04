@@ -19,7 +19,8 @@ def get_level_as_dict_from_parsed(heights, volume):
     """Wrapper to compute the level and visualization with a sqlite cache.
 
     Assume `heights` and `volume` have been parsed as NumPy types (array and
-    scalar)."""
+    scalar).
+    """
     assert isinstance(heights, np.ndarray)
     assert isinstance(volume, np.floating) or isinstance(volume, np.integer)
     heights_bytes = heights.tobytes()
@@ -41,7 +42,7 @@ def get_level_as_dict_from_parsed(heights, volume):
         svg_data = fetched[1]
         return {
             "heights": heights.tolist(),
-            "volume": volume,
+            "volume": volume.item(),
             "level": level,
             "heights_repr": serialization.to_english(heights),
             "volume_repr": serialization.to_english(volume),
@@ -58,7 +59,7 @@ def get_level_as_dict_from_parsed(heights, volume):
         svg_data = buf.getvalue()
     res = {
         "heights": heights.tolist(),
-        "volume": volume,
+        "volume": volume.item(),
         "level": level,
         "heights_repr": serialization.to_english(heights),
         "volume_repr": serialization.to_english(volume),
