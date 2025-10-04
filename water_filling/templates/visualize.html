@@ -18,4 +18,10 @@
   retrieved from the cache.
 </p>
 {%- endif %}
+{%- if bench %}
+<p>
+  <strong>Saw that one coming.</strong> The calculation and image above were
+  fetched from an in-memory queue of pregenerated instances.
+</p>
+{%- endif %}
 {%- endblock %}

@@ -116,7 +116,7 @@ async def replenish_bench():
 async def get_random(request):
     if bench:
         response_dict = bench.pop()
-        response_dict["bench"] = True  # TODO: Show this in UI
+        response_dict["bench"] = True
         asyncio.get_running_loop().run_in_executor(None, replenish_bench)
     else:
         heights, volume = numerics.random()

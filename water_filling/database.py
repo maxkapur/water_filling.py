@@ -59,7 +59,6 @@ def fulfill_as_json_serializable(heights, volume):
         svg_data = buf.getvalue()
 
     as_dict = serialization.to_json_serializable_dict(heights, volume, level, svg_data)
-    as_dict["cached"] = False
 
     with con:
         con.execute(
