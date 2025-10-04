@@ -42,9 +42,7 @@ async def fulfill(request, heights, volume, response_dict):
     if "text/html" in accept:
         html = await Template("visualize.html").render_async(
             **response_dict,
-            permalink=serialization.to_path(
-                serialization.to_str(heights), serialization.to_str(volume)
-            ),
+            permalink=serialization.to_path(heights, volume),
         )
         return html, {"Content-Type": "text/html"}
 

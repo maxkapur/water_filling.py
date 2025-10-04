@@ -52,9 +52,19 @@ def to_str(vec_or_scalar):
     return ",".join(str(x) for x in arr)
 
 
-def to_path(heights_str, volume_str):
-    """Escape stringified heights and volumes and compose a URL permalink."""
-    return f"/level?heights={quote(heights_str)}&volume={quote(volume_str)}"
+def to_path(heights_str_or_vec, volume_str_or_scalar):
+    """Stringify and escape heights and volumes and compose a URL permalink."""
+    if isinstance(heights_str_or_vec, str):
+        heights_str = quote(heights_str_or_vec)
+    else:
+        heights_str = quote(to_str(heights_str_or_vec))
+
+    if isinstance(volume_str_or_scalar, str):
+        volume_str = quote(volume_str_or_scalar)
+    else:
+        volume_str = quote(to_str(volume_str_or_scalar))
+
+    return f"/level?heights={heights_str}&volume={volume_str}"
 
 
 def maybe_int(x):

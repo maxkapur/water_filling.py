@@ -1,19 +1,15 @@
 import json
 import re
-from urllib.parse import quote
 
 import numpy as np
 import pytest
 
-
-def to_level_path(triple):
-    heights_str = ",".join(str(x) for x in triple.heights)
-    return f"/level?heights={quote(heights_str)}&volume={quote(str(triple.volume))}"
+from water_filling import serialization
 
 
 @pytest.mark.asyncio
 async def test_get_level_html(client, triple):
-    path = to_level_path(triple)
+    path = serialization.to_path(triple.heights, triple.volume)
     resp = await client.get(path, headers={"Accept": "text/html"})
     assert resp.status_code == 200
     # Not cached (depends on correct monkeypatching in conftest.py)
@@ -33,7 +29,7 @@ async def test_get_level_html(client, triple):
 
 @pytest.mark.asyncio
 async def test_get_level_svg(client, triple):
-    path = to_level_path(triple)
+    path = serialization.to_path(triple.heights, triple.volume)
     resp = await client.get(path, headers={"Accept": "image/svg"})
     assert resp.status_code == 200
     assert "http://www.w3.org/2000/svg" in resp.text
@@ -42,7 +38,7 @@ async def test_get_level_svg(client, triple):
 
 @pytest.mark.asyncio
 async def test_get_level_json(client, triple):
-    path = to_level_path(triple)
+    path = serialization.to_path(triple.heights, triple.volume)
     resp = await client.get(path, headers={"Accept": "application/json"})
     assert resp.status_code == 200
     content = json.loads(resp.text)
