@@ -41,11 +41,7 @@ async def fulfill(request, heights, volume, response_dict):
     accept = request.headers.get("Accept", "").lower()
     if "text/html" in accept:
         html = await Template("visualize.html").render_async(
-            heights_str=serialization.englishify(heights),
-            volume_str=str(serialization.maybe_int(volume)),
-            level_str="%.2f" % response_dict["level"],
-            svg_data=response_dict["svg"],
-            cached=response_dict["cached"],
+            **response_dict,
             permalink=serialization.to_path(*serialization.to_strs(heights, volume)),
         )
         return html, {"Content-Type": "text/html"}

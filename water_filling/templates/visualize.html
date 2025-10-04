@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {%- block content %}
 <p>
-  With terrain heights of <strong>{{ heights_str }}</strong> and a volume of
-  <strong>{{ volume_str }}</strong>, the level of water is
-  <strong>{{ level_str }}</strong>. <a href="{{ permalink }}">Permalink</a> to
+  With terrain heights of <strong>{{ heights_repr }}</strong> and a volume of
+  <strong>{{ volume_repr }}</strong>, the level of water is
+  <strong>{{ level_repr }}</strong>. <a href="{{ permalink }}">Permalink</a> to
   this instance.
 </p>
 <div class="figure-wrapper">
   <figure>
-    {{- svg_data | safe }}
+    {{- svg | safe }}
     <figcaption>Visualization of the water level.</figcaption>
   </figure>
 </div>

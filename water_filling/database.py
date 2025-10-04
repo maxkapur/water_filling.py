@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from . import numerics
+from . import numerics, serialization
 from .visualize import visualize
 
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
@@ -17,6 +17,8 @@ con = sqlite3.connect(cache_path)
 
 def get_level_as_dict_from_parsed(heights, volume):
     """Wrapper to compute the level and visualization with a sqlite cache."""
+    assert isinstance(heights, np.ndarray)
+    assert isinstance(volume, np.floating) or isinstance(volume, np.int_)
     heights_bytes = heights.tobytes()
 
     con.execute("""
@@ -37,6 +39,9 @@ def get_level_as_dict_from_parsed(heights, volume):
             "heights": heights.tolist(),
             "volume": volume,
             "level": level,
+            "heights_repr": serialization.englishify(heights),
+            "volume_repr": str(serialization.maybe_int(volume)),
+            "level_repr": "%.2f" % level,
             "svg": svg_data,
             "cached": True,
         }
@@ -50,6 +55,9 @@ def get_level_as_dict_from_parsed(heights, volume):
         "heights": heights.tolist(),
         "volume": volume,
         "level": level,
+        "heights_repr": serialization.englishify(heights),
+        "volume_repr": str(serialization.maybe_int(volume)),
+        "level_repr": "%.2f" % level,
         "svg": svg_data,
         "cached": False,
     }
