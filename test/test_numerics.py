@@ -30,6 +30,7 @@ def test_volume__level_below_min(heights, level):
 def test_level(triple):
     """`water_filling.level()` correctly recovers level."""
     level_estimated = numerics.level(triple.heights, triple.volume)
+    assert isinstance(level_estimated, np.float64)
     volume_achieved = numerics.volume(triple.heights, level_estimated)
     assert np.isclose(volume_achieved, triple.volume)
     assert np.isclose(level_estimated, triple.level)

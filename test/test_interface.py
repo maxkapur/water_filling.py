@@ -15,7 +15,8 @@ async def test_get_level_html(client, triple):
     # Not cached (depends on correct monkeypatching in conftest.py)
     assert "cache" not in resp.text
 
-    level_esc = re.escape(str(triple.level))
+    # Computed level is always an np.float64
+    level_esc = re.escape(str(float(triple.level)))
     if np.isclose(triple.level, 0.0):
         assert re.search(rf"<strong>-?{level_esc}\d*</strong>", resp.text), level_esc
     else:
