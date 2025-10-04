@@ -37,7 +37,7 @@ def initialize_app():
 app = initialize_app()
 
 
-async def fulfill(request, heights, volume, response_dict):
+async def fulfill(request, response_dict):
     accept = request.headers.get("Accept", "").lower()
     if "text/html" in accept:
         html = await Template("visualize.html").render_async(
@@ -60,7 +60,7 @@ async def get_level(request):
         return "Bad request", 400
 
     response_dict = fulfill_as_json_serializable(heights, volume)
-    return await fulfill(request, heights, volume, response_dict)
+    return await fulfill(request, response_dict)
 
 
 @app.get("/")
@@ -109,19 +109,19 @@ async def replenish_bench():
     for _ in range(shortfall):
         heights, volume = numerics.random()
         response_dict = fulfill_as_json_serializable(heights, volume)
-        bench.append((heights, volume, response_dict))
+        bench.append(response_dict)
 
 
 @app.get("/random")
 async def get_random(request):
     if bench:
-        heights, volume, response_dict = bench.pop()
+        response_dict = bench.pop()
         response_dict["bench"] = True  # TODO: Show this in UI
         asyncio.get_running_loop().run_in_executor(None, replenish_bench)
     else:
         heights, volume = numerics.random()
         response_dict = fulfill_as_json_serializable(heights, volume)
-    return await fulfill(request, heights, volume, response_dict)
+    return await fulfill(request, response_dict)
 
 
 @app.get("/style.css")
