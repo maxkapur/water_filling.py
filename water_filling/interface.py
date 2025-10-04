@@ -102,15 +102,19 @@ async def post_level(request):
 bench = []
 
 
-def replenish_bench():
-    shortfall = 10 - len(bench)
+async def replenish_bench():
+    while True:
+        if (shortfall := 10 - len(bench)) > 0:
+            print(f"Replenishing bench: {shortfall = }")
 
-    for _ in range(shortfall):
-        heights, volume = numerics.random()
-        response_dict = database.fulfill_as_json_serializable_skip_cache(
-            heights, volume
-        )
-        bench.append(response_dict)
+        for _ in range(shortfall):
+            heights, volume = numerics.random()
+            response_dict = database.fulfill_as_json_serializable_skip_cache(
+                heights, volume
+            )
+            bench.append(response_dict)
+
+        await asyncio.sleep(5)
 
 
 @app.get("/random")
@@ -118,7 +122,6 @@ async def get_random(request):
     if bench:
         response_dict = bench.pop()
         response_dict["bench"] = True
-        asyncio.get_running_loop().run_in_executor(None, replenish_bench)
     else:
         heights, volume = numerics.random()
         # Use the cache here in case the user wants to save permalink
@@ -138,7 +141,7 @@ async def get_style(request):
 
 
 async def main():
-    replenish_bench()  # Replenish the bench once to get things started
     server = asyncio.create_task(app.start_server())
+    replenisher = asyncio.create_task(replenish_bench())
     print("Serving app on http://localhost:5000")
-    await server
+    await asyncio.gather(server, replenisher)
