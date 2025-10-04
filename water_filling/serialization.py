@@ -57,18 +57,18 @@ def maybe_int(x):
     return x
 
 
-def englishify(list_of_numbers):  # anglicize?
+def englishify(array_or_scalar):  # anglicize?
     """Convert a list of numbers to a running-text representation.
 
     For example, `[1, 2, 3]` becomes the string `"1, 2, and 3"`.
     """
-    arr = np.asarray(list_of_numbers)
+    arr = np.asanyarray(array_or_scalar)
     arr = maybe_int(arr)
     match arr.size:
         case 0:
             raise ValueError("Empty list")
         case 1:
-            return str(arr[0])
+            return str(arr.item())
         case 2:
             return f"{arr[0]} and {arr[1]}"
         case _:
