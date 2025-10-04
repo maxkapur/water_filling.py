@@ -9,8 +9,7 @@ import mistune
 from microdot import Microdot, redirect
 from microdot.jinja import Template
 
-from . import colors, numerics, serialization
-from .database import fulfill_as_json_serializable
+from . import colors, database, numerics, serialization
 
 
 def initialize_app():
@@ -59,7 +58,7 @@ async def get_level(request):
     if heights is None or volume is None:
         return "Bad request", 400
 
-    response_dict = fulfill_as_json_serializable(heights, volume)
+    response_dict = database.fulfill_as_json_serializable_with_cache(heights, volume)
     return await fulfill(request, response_dict)
 
 
@@ -103,12 +102,14 @@ async def post_level(request):
 bench = []
 
 
-async def replenish_bench():
+def replenish_bench():
     shortfall = 10 - len(bench)
 
     for _ in range(shortfall):
         heights, volume = numerics.random()
-        response_dict = fulfill_as_json_serializable(heights, volume)
+        response_dict = database.fulfill_as_json_serializable_skip_cache(
+            heights, volume
+        )
         bench.append(response_dict)
 
 
@@ -120,7 +121,10 @@ async def get_random(request):
         asyncio.get_running_loop().run_in_executor(None, replenish_bench)
     else:
         heights, volume = numerics.random()
-        response_dict = fulfill_as_json_serializable(heights, volume)
+        # Use the cache here in case the user wants to save permalink
+        response_dict = database.fulfill_as_json_serializable_with_cache(
+            heights, volume
+        )
     return await fulfill(request, response_dict)
 
 
@@ -134,7 +138,7 @@ async def get_style(request):
 
 
 async def main():
-    await replenish_bench()  # Replenish the bench once to get things started
+    replenish_bench()  # Replenish the bench once to get things started
     server = asyncio.create_task(app.start_server())
     print("Serving app on http://localhost:5000")
     await server

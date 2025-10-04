@@ -3,8 +3,8 @@ import numpy as np
 from water_filling import database
 
 
-def test_database(mock_db, triple):
-    res = database.fulfill_as_json_serializable(
+def fulfill_as_json_serializable_skip_cache(mock_db, triple):
+    res = database.fulfill_as_json_serializable_skip_cache(
         np.asanyarray(triple.heights), np.asanyarray(triple.volume)[()]
     )
     assert res["heights"] == triple.heights
@@ -15,8 +15,24 @@ def test_database(mock_db, triple):
     assert res["level_repr"]
     assert res["svg"]
     assert res["cached"] is False
+    assert res["bench"] is False
 
-    res2 = database.fulfill_as_json_serializable(
+
+def fulfill_as_json_serializable_with_cache(mock_db, triple):
+    res = database.fulfill_as_json_serializable_with_cache(
+        np.asanyarray(triple.heights), np.asanyarray(triple.volume)[()]
+    )
+    assert res["heights"] == triple.heights
+    assert res["volume"] == triple.volume
+    assert np.isclose(res["level"], triple.level)
+    assert res["heights_repr"]
+    assert res["volume_repr"]
+    assert res["level_repr"]
+    assert res["svg"]
+    assert res["cached"] is False
+    assert res["bench"] is False
+
+    res2 = database.fulfill_as_json_serializable_with_cache(
         np.asanyarray(triple.heights), np.asanyarray(triple.volume)[()]
     )
     assert res2["cached"] is True
