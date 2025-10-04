@@ -85,3 +85,24 @@ def to_english(vec_or_scalar):
             return f"{arr[0]} and {arr[1]}"
         case _:
             return ", ".join(str(x) for x in arr[:-1]) + f", and {arr[-1]}"
+
+
+def to_json_serializable_dict(heights, volume, level, svg_data):
+    """Format given problem and solution as a JSON-serializable dict."""
+    assert isinstance(heights, np.ndarray)
+    assert isinstance(volume, np.floating) or isinstance(volume, np.integer)
+    # Narrower type because we know this was returned from our function
+    assert isinstance(level, np.float64)
+    assert isinstance(svg_data, str)
+
+    return {
+        "heights": heights.tolist(),
+        "volume": volume.item(),
+        "level": level,
+        "heights_repr": to_english(heights),
+        "volume_repr": to_english(volume),
+        # Computed value may be a crazy decimal, so truncate it
+        "level_repr": "%.2f" % level,
+        "svg": svg_data,
+        "permalink": to_path(heights, volume),
+    }

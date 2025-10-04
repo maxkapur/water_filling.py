@@ -10,7 +10,7 @@ from microdot import Microdot, redirect
 from microdot.jinja import Template
 
 from . import colors, numerics, serialization
-from .database import get_level_as_dict_from_parsed
+from .database import fulfill_as_json_serializable
 
 
 def initialize_app():
@@ -42,7 +42,6 @@ async def fulfill(request, heights, volume, response_dict):
     if "text/html" in accept:
         html = await Template("visualize.html").render_async(
             **response_dict,
-            permalink=serialization.to_path(heights, volume),
         )
         return html, {"Content-Type": "text/html"}
 
@@ -60,7 +59,7 @@ async def get_level(request):
     if heights is None or volume is None:
         return "Bad request", 400
 
-    response_dict = get_level_as_dict_from_parsed(heights, volume)
+    response_dict = fulfill_as_json_serializable(heights, volume)
     return await fulfill(request, heights, volume, response_dict)
 
 
@@ -109,7 +108,7 @@ async def replenish_bench():
 
     for _ in range(shortfall):
         heights, volume = numerics.random()
-        response_dict = get_level_as_dict_from_parsed(heights, volume)
+        response_dict = fulfill_as_json_serializable(heights, volume)
         bench.append((heights, volume, response_dict))
 
 
@@ -121,7 +120,7 @@ async def get_random(request):
         asyncio.get_running_loop().run_in_executor(None, replenish_bench)
     else:
         heights, volume = numerics.random()
-        response_dict = get_level_as_dict_from_parsed(heights, volume)
+        response_dict = fulfill_as_json_serializable(heights, volume)
     return await fulfill(request, heights, volume, response_dict)
 
 

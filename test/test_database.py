@@ -4,7 +4,7 @@ from water_filling import database
 
 
 def test_database(mock_db, triple):
-    res = database.get_level_as_dict_from_parsed(
+    res = database.fulfill_as_json_serializable(
         np.asanyarray(triple.heights), np.asanyarray(triple.volume)[()]
     )
     assert res["heights"] == triple.heights
@@ -16,7 +16,7 @@ def test_database(mock_db, triple):
     assert res["svg"]
     assert res["cached"] is False
 
-    res2 = database.get_level_as_dict_from_parsed(
+    res2 = database.fulfill_as_json_serializable(
         np.asanyarray(triple.heights), np.asanyarray(triple.volume)[()]
     )
     assert res2["cached"] is True

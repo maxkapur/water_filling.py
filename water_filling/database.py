@@ -15,11 +15,17 @@ cache_path.parent.mkdir(parents=True, exist_ok=True)
 con = sqlite3.connect(cache_path)
 
 
-def get_level_as_dict_from_parsed(heights, volume):
-    """Wrapper to compute the level and visualization with a sqlite cache.
+def fulfill_as_json_serializable(heights, volume):
+    """Retrieve JSON-serializable dict with solution for given problem params.
 
-    Assume `heights` and `volume` have been parsed as NumPy types (array and
+    Assumes `heights` and `volume` have been parsed as NumPy types (array and
     scalar).
+
+    Wraps `numerics.level()` and `serialization.to_json_serializable_dict()`
+    with a sqlite3 disk cache.
+
+    The returned dictionary can be forwarded to fulfill JSON requests or
+    unpacked to populate the `visualize.html` template.
     """
     assert isinstance(heights, np.ndarray)
     assert isinstance(volume, np.floating) or isinstance(volume, np.integer)
@@ -40,38 +46,24 @@ def get_level_as_dict_from_parsed(heights, volume):
     ).fetchone():
         level = np.float64(fetched[0])
         svg_data = fetched[1]
-        return {
-            "heights": heights.tolist(),
-            "volume": volume.item(),
-            "level": level,
-            "heights_repr": serialization.to_english(heights),
-            "volume_repr": serialization.to_english(volume),
-            # Computed value may be a crazy decimal, so truncate it
-            "level_repr": "%.2f" % level,
-            "svg": svg_data,
-            "cached": True,
-        }
+        as_dict = serialization.to_json_serializable_dict(
+            heights, volume, level, svg_data
+        )
+        as_dict["cached"] = True
+        return as_dict
 
     level = numerics.level(heights, volume)
     fig, ax = visualize(heights, level)
     with io.StringIO() as buf:
         fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight")
         svg_data = buf.getvalue()
-    res = {
-        "heights": heights.tolist(),
-        "volume": volume.item(),
-        "level": level,
-        "heights_repr": serialization.to_english(heights),
-        "volume_repr": serialization.to_english(volume),
-        # Computed value may be a crazy decimal, so truncate it
-        "level_repr": "%.2f" % level,
-        "svg": svg_data,
-        "cached": False,
-    }
+
+    as_dict = serialization.to_json_serializable_dict(heights, volume, level, svg_data)
+    as_dict["cached"] = False
 
     with con:
         con.execute(
             "INSERT INTO water_filling VALUES (?,?,?,?)",
             (heights_bytes, volume_bytes, level, svg_data),
         )
-    return res
+    return as_dict
