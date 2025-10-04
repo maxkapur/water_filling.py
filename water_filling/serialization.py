@@ -67,14 +67,6 @@ def to_path(heights_str_or_vec, volume_str_or_scalar):
     return f"/level?heights={heights_str}&volume={volume_str}"
 
 
-def maybe_int(x):
-    """If `x` appears to be integer, return it as an integer."""
-    rounded = x.round().astype(np.int_)
-    if np.allclose(x, rounded):
-        return rounded
-    return x
-
-
 def to_english(vec_or_scalar):
     """Convert numbers to a running-text representation.
 
