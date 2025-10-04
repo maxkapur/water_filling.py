@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from . import colors
+from water_filling import colors
 
 waveform = "triangle"
 

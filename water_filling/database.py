@@ -7,8 +7,8 @@ from pathlib import Path
 import matplotlib
 import numpy as np
 
-from . import numerics, serialization
-from .visualize import visualize
+from water_filling import numerics, serialization
+from water_filling.visualize import visualize
 
 cache_path = Path.home() / ".cache" / "water_filling.cache.db"
 cache_path.parent.mkdir(parents=True, exist_ok=True)
