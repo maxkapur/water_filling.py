@@ -14,7 +14,7 @@
 {%- endif %}
 
 {%- if static %}
-<form action="/level.html" accept-charset="utf-8" method="GET">
+<form action="{{ prefix }}/level.html" accept-charset="utf-8" method="GET">
   <div><strong>Solve your own water-filling problem.</strong></div>
   <div>
     <label for="heights">Terrain heights (comma separated):</label>
@@ -33,7 +33,7 @@
   </div>
 </form>
 {%- else %}
-<form action="/level" accept-charset="utf-8" method="POST">
+<form action="{{ prefix }}/level" accept-charset="utf-8" method="POST">
   <div><strong>Solve your own water-filling problem.</strong></div>
   <div>
     <label for="heights">Terrain heights (comma separated):</label>
