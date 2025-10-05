@@ -7,14 +7,23 @@ of the water be once it has sloshed around and stabilized?
 The water-filling problem can be solved by analyzing the function
 `volume(heights, level)`, the volume of water present when the level is at a
 given value. Since this function is piecewise linear and increasing in `level`,
-we can invert it using linear interpolation (see
-`water_filling/water_filling.py` in the source code).
+we can invert it using linear interpolation (see `water_filling/numerics.py` in
+the source code).
 
 The purpose of this project is to practice standard routing and caching patterns
 using the [Microdot](https://microdot.readthedocs.io/en/latest/index.html)
 framework.
 
 <!-- end_site_header -->
+
+## Preview
+
+The design goal here is to render everything on the backend, so you should
+follow the instructions below to serve locally if you want to play with all the
+API options and test the caching behavior. Nonetheless, the repo also includes a
+script to build a nerfed version of the project to a fully static site so you
+can preview the stylesheets [here on GitHub
+Pages](https://maxkapur.com/water_filling.py/).
 
 ## Usage
 
