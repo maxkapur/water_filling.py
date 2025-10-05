@@ -5,6 +5,10 @@ from urllib.parse import quote
 
 import numpy as np
 
+from water_filling.options import get_options
+
+options = get_options()
+
 
 @functools.lru_cache(maxsize=1024)
 def parse_volume(s):
@@ -64,7 +68,7 @@ def to_path(heights_str_or_vec, volume_str_or_scalar):
     else:
         volume_str = quote(to_str(volume_str_or_scalar))
 
-    return f"/level?heights={heights_str}&volume={volume_str}"
+    return f"{options.prefix}/level?heights={heights_str}&volume={volume_str}"
 
 
 def to_english(vec_or_scalar):

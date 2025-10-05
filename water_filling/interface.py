@@ -10,6 +10,9 @@ from microdot import Microdot, redirect
 from microdot.jinja import Template
 
 from water_filling import colors, database, numerics, serialization
+from water_filling.options import get_options
+
+options = get_options()
 
 
 def initialize_app():
@@ -29,6 +32,8 @@ def initialize_app():
     Template.jinja_env.globals["header_html"] = mistune.html(header_markdown)
 
     Template.jinja_env.globals["colors"] = colors.colors
+    Template.jinja_env.globals["static"] = False
+    Template.jinja_env.globals["prefix"] = options.prefix
 
     return app
 
@@ -51,7 +56,7 @@ async def fulfill(request, response_dict):
     return serialization.filtered(response_dict)
 
 
-@app.get("/level")
+@app.get(f"{options.prefix}/level")
 async def get_level(request):
     heights = serialization.parse_heights(request.args.get("heights"))
     volume = serialization.parse_volume(request.args.get("volume"))
@@ -62,7 +67,7 @@ async def get_level(request):
     return await fulfill(request, response_dict)
 
 
-@app.get("/")
+@app.get(f"{options.prefix}/")
 async def get_index(request):
     heights, volume = numerics.random()
     heights_str = serialization.to_str(heights)
@@ -80,7 +85,7 @@ async def get_index(request):
     return html, {"Content-Type": "text/html"}
 
 
-@app.post("/level")
+@app.post(f"{options.prefix}/level")
 async def post_level(request):
     heights_str = request.form.get("heights")
     volume_str = request.form.get("volume")
@@ -93,7 +98,7 @@ async def post_level(request):
     if errors:
         error_str = ";".join(errors)
         return redirect(
-            f"/?errors={quote(error_str)}&heights={quote(heights_str)}&volume={quote(volume_str)}"
+            f"{{ prefix }}/?errors={quote(error_str)}&heights={quote(heights_str)}&volume={quote(volume_str)}"
         )
 
     return redirect(serialization.to_path(heights_str, volume_str))
@@ -118,7 +123,7 @@ async def replenish_bench():
         await asyncio.sleep(5)
 
 
-@app.get("/random")
+@app.get(f"{options.prefix}/random")
 async def get_random(request):
     if bench:
         response_dict = bench.pop()
@@ -133,7 +138,7 @@ async def get_random(request):
     return await fulfill(request, response_dict)
 
 
-@app.get("/style.css")
+@app.get(f"{options.prefix}/style.css")
 async def get_style(request):
     css = await Template("style.css").render_async()
     return css, {

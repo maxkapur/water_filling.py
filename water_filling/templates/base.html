@@ -3,17 +3,30 @@
 <head>
   <title>Water filling</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="{{ prefix }}/style.css">
 </head>
 <body>
   <main>
+    {%- if static %}
+    <aside class="static-banner">
+      <strong>
+        This is a static site build designed to give a preview of the
+        basic look and feel.
+      </strong> Interactive features are disabled so I can use free GitHub Pages
+      hosting 😅. To see the full version, try running the source code!
+    </aside>
+    {%- endif %}
     <header>
       {{ header_html | safe }}
       <nav>
         <p>
           {%- block navlist %}
-          <a href="/">Home</a>
-          | <a href="/random">Random problem</a>
+          <a href="{{ prefix }}/">Home</a>
+            {%- if static %}
+            | <a class="disabled">Random problem</a>
+            {%- else %}
+            | <a href="{{ prefix }}/random">Random problem</a>
+            {%- endif %}
           | <a href="https://github.com/maxkapur/water_filling.py">Source code</a>
           {%- endblock %}
         </p>

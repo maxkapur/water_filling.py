@@ -3,8 +3,12 @@
 <p>
   With terrain heights of <strong>{{ heights_repr }}</strong> and a volume of
   <strong>{{ volume_repr }}</strong>, the level of water is
-  <strong>{{ level_repr }}</strong>. <a href="{{ permalink }}">Permalink</a> to
-  this instance.
+  <strong>{{ level_repr }}</strong>.
+  {%- if static %}
+  <a class="disabled">Permalink</a> to this instance.
+  {%- else %}
+  <a href="{{ permalink }}">Permalink</a> to this instance.
+  {%- endif %}
 </p>
 <div class="figure-wrapper">
   <figure>
