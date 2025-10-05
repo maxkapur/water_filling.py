@@ -13,12 +13,17 @@ import numpy as np
 from microdot.jinja import Template
 
 from water_filling import database, serialization
+from water_filling.interface import initialize_app
 
 heights = np.asanyarray([3, 5, 6, 8, 5, 1, 3])
 volume = np.int_(19)
 
 
 class StaticTemplate(Template):
+    # Calls Template.initialize() to configure templates dir, async, populate
+    # globals variables.
+    initialize_app()
+
     # Inherit from Template and modify a copy of its globals to minimize side
     # effects of importing or running this script.
     jinja_env = Template.jinja_env
