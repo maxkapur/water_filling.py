@@ -48,8 +48,7 @@ async def render_level():
     )
 
 
-async def main():
-    build_dir = Path(__file__).parent.parent / "static"
+async def main(build_dir=Path(__file__).parent.parent / "static"):
     build_dir.mkdir(parents=True, exist_ok=True)
 
     dests = [
