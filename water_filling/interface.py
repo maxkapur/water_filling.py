@@ -29,6 +29,7 @@ def initialize_app():
     Template.jinja_env.globals["header_html"] = mistune.html(header_markdown)
 
     Template.jinja_env.globals["colors"] = colors.colors
+    Template.jinja_env.globals["static"] = False
 
     return app
 

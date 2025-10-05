@@ -7,6 +7,7 @@
   /* beautify ignore:end */
 
   --fg-text: black;
+  --fg-text-disabled: {{ colors.gray }};
   --spacing-unit: 15px;
 
   font-size: 16px;
@@ -70,6 +71,12 @@ h6 {
   }
 }
 
+a.disabled,
+a.disabled:hover {
+  text-decoration: underline;
+  color: var(--fg-text-disabled);
+}
+
 a:hover {
   text-decoration-style: wavy;
 }
@@ -85,11 +92,17 @@ main {
   justify-content: space-evenly;
 }
 
+aside,
 header,
 article,
 footer {
   border: 1px solid var(--fg-element);
   padding: var(--spacing-unit);
+}
+
+.static-banner {
+  border: 3px dashed var(--fg-element);
+  background: var(--paper-color);
 }
 
 header {
