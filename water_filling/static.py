@@ -48,9 +48,7 @@ async def render_style():
 
 async def render_level():
     response_dict = database.fulfill_as_json_serializable_skip_cache(heights, volume)
-    return await Template("visualize.html").render_async(
-        **response_dict,
-    )
+    return await StaticTemplate("visualize.html").render_async(**response_dict)
 
 
 async def main(build_dir=Path(__file__).parent.parent / "static"):
