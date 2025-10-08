@@ -35,7 +35,7 @@ async def render_index():
     heights_str = serialization.to_str(heights)
     volume_str = serialization.to_str(volume)
 
-    return await StaticTemplate("form.html").render_async(
+    return StaticTemplate("form.html").render(
         heights_str=heights_str,
         volume_str=volume_str,
         errors=[],
@@ -43,12 +43,12 @@ async def render_index():
 
 
 async def render_style():
-    return await StaticTemplate("style.css").render_async()
+    return StaticTemplate("style.css").render()
 
 
 async def render_level():
     response_dict = database.fulfill_as_json_serializable_skip_cache(heights, volume)
-    return await StaticTemplate("visualize.html").render_async(**response_dict)
+    return StaticTemplate("visualize.html").render(**response_dict)
 
 
 async def main(build_dir=Path(__file__).parent.parent / "static"):

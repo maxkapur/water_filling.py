@@ -21,7 +21,6 @@ def initialize_app():
 
     Template.initialize(
         Path(__file__).parent / "templates",
-        enable_async=True,
         undefined=jinja2.StrictUndefined,
     )
 
@@ -44,8 +43,8 @@ app = initialize_app()
 async def fulfill(request, response_dict):
     accept = request.headers.get("Accept", "").lower()
     if "text/html" in accept:
-        html = await Template("visualize.html").render_async(
-            **response_dict,
+        html = Template("visualize.html").render(
+            **response_dict
         )
         return html, {"Content-Type": "text/html"}
 
@@ -77,7 +76,7 @@ async def get_index(request):
         errors = errors_str.split(";")
     else:
         errors = []
-    html = await Template("form.html").render_async(
+    html = Template("form.html").render(
         heights_str=request.args.get("heights") or heights_str,
         volume_str=request.args.get("volume") or volume_str,
         errors=errors,
@@ -140,7 +139,7 @@ async def get_random(request):
 
 @app.get(f"{options.prefix}/style.css")
 async def get_style(request):
-    css = await Template("style.css").render_async()
+    css = Template("style.css").render()
     return css, {
         "Content-Type": "text/css",
         "Max-Age": 3600 * 24,
